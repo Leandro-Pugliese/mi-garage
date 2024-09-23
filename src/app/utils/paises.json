@@ -1,0 +1,87 @@
+{
+    "Argentina": {
+      "provinces": {
+        "CABA": [
+            "Agronomía", "Almagro", "Balvanera", "Barracas", "Belgrano", "Boedo", "Caballito", "Chacarita", 
+            "Coghlan", "Colegiales", "Constitución", "Flores", "Floresta", "La Boca", "La Paternal", 
+            "Liniers", "Mataderos", "Monte Castro", "Montserrat", "Nueva Pompeya", "Núñez", "Palermo", 
+            "Parque Avellaneda", "Parque Chacabuco", "Parque Chas", "Parque Patricios", "Puerto Madero", 
+            "Recoleta", "Retiro", "Saavedra", "San Cristóbal", "San Nicolás", "San Telmo", "Versalles", 
+            "Villa Crespo", "Villa Devoto", "Villa General Mitre", "Villa Lugano", "Villa Luro", "Villa Ortúzar", 
+            "Villa Pueyrredón", "Villa Real", "Villa Riachuelo", "Villa Santa Rita", "Villa Soldati", 
+            "Villa Urquiza", "Villa del Parque", "Vélez Sarsfield"
+        ],
+        "Buenos Aires": ["La Plata", "Mar del Plata", "Bahía Blanca"],
+        "Córdoba": ["Córdoba", "Villa Carlos Paz", "Río Cuarto"],
+        "Santa Fe": ["Rosario", "Santa Fe", "Rafaela"]
+      }
+    },
+    "Brasil": {
+      "provinces": {
+        "São Paulo": ["São Paulo", "Campinas", "Santos"],
+        "Río de Janeiro": ["Río de Janeiro", "Niterói", "Petrópolis"],
+        "Minas Gerais": ["Belo Horizonte", "Uberlândia", "Contagem"]
+      }
+    },
+    "Chile": {
+      "provinces": {
+        "Santiago": ["Santiago", "Providencia", "Las Condes"],
+        "Valparaíso": ["Valparaíso", "Viña del Mar", "Concón"],
+        "Biobío": ["Concepción", "Talcahuano", "Los Ángeles"]
+      }
+    },
+    "Colombia": {
+      "provinces": {
+        "Bogotá D.C.": ["Bogotá"],
+        "Antioquia": ["Medellín", "Envigado", "Bello"],
+        "Valle del Cauca": ["Cali", "Palmira", "Buenaventura"]
+      }
+    },
+    "Uruguay": {
+      "provinces": {
+        "Montevideo": ["Montevideo"],
+        "Canelones": ["Canelones", "Ciudad de la Costa", "Las Piedras"],
+        "Maldonado": ["Punta del Este", "Maldonado", "San Carlos"]
+      }
+    },
+    "Paraguay": {
+      "provinces": {
+        "Asunción": ["Asunción"],
+        "Central": ["Luque", "San Lorenzo", "Capiatá"],
+        "Alto Paraná": ["Ciudad del Este", "Hernandarias", "Presidente Franco"]
+      }
+    },
+    "Bolivia": {
+      "provinces": {
+        "La Paz": ["La Paz", "El Alto", "Viacha"],
+        "Santa Cruz": ["Santa Cruz de la Sierra", "Montero", "Warnes"],
+        "Cochabamba": ["Cochabamba", "Quillacollo", "Sacaba"]
+      }
+    },
+    "Ecuador": {
+      "provinces": {
+        "Pichincha": ["Quito", "Cayambe", "Sangolquí"],
+        "Guayas": ["Guayaquil", "Durán", "Samborondón"],
+        "Azuay": ["Cuenca", "Gualaceo", "Paute"]
+      }
+    },
+    "Venezuela": {
+      "provinces": {
+        "Distrito Capital": ["Caracas"],
+        "Zulia": ["Maracaibo", "Cabimas", "Ciudad Ojeda"],
+        "Miranda": ["Los Teques", "Guatire", "Guarenas"]
+      }
+    },
+    "Perú": {
+      "provinces": {
+        "Lima": ["Lima", "Callao", "Miraflores"],
+        "Cusco": ["Cusco", "Urubamba", "Machu Picchu"],
+        "Arequipa": ["Arequipa", "Mollendo", "Camaná"]
+      }
+    },
+    "Otro": {
+        "provinces": {
+            "Otro": []
+        }
+    }
+}
