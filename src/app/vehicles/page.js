@@ -74,14 +74,14 @@ export default function Vehicles() {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {vehicles.map((vehicle) => (
                         <div key={vehicle._id} className="bg-white shadow-md rounded-lg p-6">
-                        <h2 className="text-xl font-bold mb-2">{vehicle.marca} {vehicle.modelo} ({vehicle.year})</h2>
-                        <p className="text-white"><strong>Patente:</strong> {vehicle.patente}</p>
-                        <p className="text-white"><strong>Combustible:</strong> {vehicle.combustible}</p>
-                        <p className="text-white"><strong>GNC:</strong> {vehicle.gnc ? 'Sí' : 'No'}</p>
-                        <p className="text-white"><strong>Seguro:</strong> {vehicle.seguro.nombre}</p>
-                        <p className="text-white"><strong>Uso:</strong> {vehicle.uso}</p>
-                        <p className="text-white"><strong>Kilometraje:</strong> {vehicle.kilometraje} km</p>
-                        <p className="text-white"><strong>Última actualización:</strong> {new Date(vehicle.kilometrajeActualizado).toLocaleDateString()}</p>
+                            <h2 className="text-xl font-bold mb-2">{vehicle.marca} {vehicle.modelo} ({vehicle.year})</h2>
+                            <p className="text-white"><strong>Patente:</strong> {vehicle.patente}</p>
+                            <p className="text-white"><strong>Combustible:</strong> {vehicle.combustible}</p>
+                            <p className="text-white"><strong>GNC:</strong> {vehicle.gnc ? 'Sí' : 'No'}</p>
+                            <p className="text-white"><strong>Seguro:</strong> {vehicle.seguro.nombre}</p>
+                            <p className="text-white"><strong>Uso:</strong> {vehicle.uso}</p>
+                            <p className="text-white"><strong>Kilometraje:</strong> {vehicle.kilometraje} km</p>
+                            <p className="text-white"><strong>Última actualización:</strong> {new Date(vehicle.kilometrajeActualizado).toLocaleDateString()}</p>
                         </div>
                     ))}
                     </div>
