@@ -1,5 +1,8 @@
 import Link from 'next/link';
 import { cookies } from 'next/headers';
+import LogOut from './logOut';
+import 'bootstrap-icons/font/bootstrap-icons.css';
+
 
 export default function Navbar() {
 
@@ -13,17 +16,30 @@ export default function Navbar() {
         {
           (token) &&
           <div>
-            <Link href="#" className="text-white hover:underline">Agregar Vehículo</Link>
-            <span className="mx-2 text-white">|</span>
-            <Link href="#" className="text-white hover:underline">Mis Datos</Link>
+            <Link href="/vehicles" className="text-white hover:underline">
+              <i className="bi bi-car-front-fill mx-1"/>
+              Mis Vehículos
+            </Link>
+            <span className="mx-3 text-white">|</span>
+            <Link href="#" className="text-white hover:underline">
+              <i className="bi bi-person-fill mx-1"/>
+              Mis Datos
+            </Link>
+            <span className="mx-3 text-white">|</span>
+            <Link href="#" className="text-white hover:underline">
+              <i className="bi bi-bell-fill mx-1"/>
+              Notficaciones
+            </Link>
+            <span className="mx-3 text-white">|</span>
+            <LogOut />
           </div>
         }
         {
           (!token) &&
           <div>
-            <Link href="/login" className="text-white hover:underline">Iniciar sesión</Link>
+            <Link href="/user/login" className="text-white hover:underline">Iniciar sesión</Link>
             <span className="mx-2 text-white">|</span>
-            <Link href="/register" className="text-white hover:underline">Registrarse</Link>
+            <Link href="/user/register" className="text-white hover:underline">Registrarse</Link>
           </div>
         }
       </div>
