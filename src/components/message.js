@@ -1,7 +1,7 @@
 export default function Message({mensaje, showMsj, showErrorMsj}) {
 
     return (
-        <div className="container__mensajes">
+        <div>
             {
                 (showErrorMsj) &&
                 <div className="text-red-600">
