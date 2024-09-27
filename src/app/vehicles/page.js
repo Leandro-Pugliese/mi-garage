@@ -5,6 +5,7 @@ import Cookies from 'js-cookie';
 import axios from '../utils/axios';
 //import { useRouter } from 'next/router'; // Si uso este tengo que usarlo directo como useRouter().push()
 import { useRouter } from 'next/navigation' //Asi puedo usarlo como constante.
+import Link from 'next/link';
 
 export default function Vehicles() {
     
@@ -67,14 +68,14 @@ export default function Vehicles() {
     }, [token]);
 
     return (
-        <div className="container mx-auto px-4 py-6 bg-gray-800">
-            <h1 className="text-2xl font-bold mb-6">Mis Vehículos</h1>
+        <div className="container min-h-screen mx-auto px-4 py-6 bg-gray-800">
+            <h1 className="text-2xl font-bold mb-6 text-white">Mis Vehículos</h1>
             {
                 vehicles.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
                     {vehicles.map((vehicle) => (
-                        <div key={vehicle._id} className="bg-white shadow-md rounded-lg p-6">
-                            <h2 className="text-xl font-bold mb-2">{vehicle.marca} {vehicle.modelo} ({vehicle.year})</h2>
+                        <div key={vehicle._id} className="bg-violet-800 shadow-md rounded-lg p-6">
+                            <h2 className="text-white text-xl font-bold mb-2">{vehicle.marca} {vehicle.modelo} ({vehicle.year})</h2>
                             <p className="text-white"><strong>Patente:</strong> {vehicle.patente}</p>
                             <p className="text-white"><strong>Combustible:</strong> {vehicle.combustible}</p>
                             <p className="text-white"><strong>GNC:</strong> {vehicle.gnc ? 'Sí' : 'No'}</p>
@@ -86,9 +87,14 @@ export default function Vehicles() {
                     ))}
                     </div>
                 ) : (
-                    <p className="text-white">No tienes vehículos cargados.</p>
+                    <div>
+                        <p className="text-white mb-5">No tienes vehículos cargados.</p>
+                    </div>
                 )
             }
+            <Link href="/vehicles/add" className='bg-pink-700 text-white cursor-pointer p-2 mb-5 w-full rounded hover:bg-pink-600'>
+                Agregar Vehículo
+            </Link>
         </div>
     );
 };

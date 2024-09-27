@@ -4,23 +4,27 @@ import { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
 import axios from './utils/axios';
 import VerifyEmailPopup from "@/components/verifyEmail";
-import { useRouter } from 'next/navigation'
 import MessagePopup from '@/components/messagePopUp';
+import Loader from '@/components/loader';
 
 
 export default function Home() {
+
+  //Hook para loader
+  const [loader, setLoader] = useState(true);
+
   //Verificación de sesión.
-  const router = useRouter();
   const [token, setToken] = useState(null)
   const isSession = () => {
     // Recupero el token de la cookie
     const hayToken = Cookies.get('token');
-    // Si no hay token, redirigijo al usuario al login
+    // Si no hay token, lo dejo null
     if (!hayToken) {
-        router.push('/user/login');
-        return
+      setLoader(false)
+      return
     }
     setToken(hayToken)
+    setLoader(false)
   }
 
   useEffect(() => {
@@ -82,19 +86,24 @@ export default function Home() {
   return (
     <div className="bg-gray-800 min-h-screen flex items-center justify-center flex-col">
       {
-        (!token) &&
+        (loader) &&
+        <Loader />
+      }
+      {
+        (!token && !loader) &&
         <div>
           <p className='text-white'>No hay token</p>
         </div>
       }
       {
-        (token) &&
+        (token && !loader) &&
         <div>
           {
             (!isEmailVerified) &&
             <VerifyEmailPopup onSendEmail={handleSendVerificationEmail} />
           }
           <MessagePopup message={message} severity={severity} onClose={handleClosePopup} />
+          <p className='text-white'>Estoy verificado</p>
         </div>
       }
     </div>

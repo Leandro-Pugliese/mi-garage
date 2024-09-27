@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { cookies } from 'next/headers';
 import LogOut from './logOut';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import Image from 'next/image';
 
 
 export default function Navbar() {
@@ -10,9 +11,14 @@ export default function Navbar() {
   const token = cookieStore.get('token')?.value;
 
   return (
-    <nav className="bg-violet-900 p-6">
-      <div className="flex justify-between">
-        <h1 className="text-white text-xl">Mi Garage</h1>
+    <nav className="bg-violet-900 p-2">
+      <div className="flex justify-between items-center">
+        <Image
+          src="/images/Logo.png"
+          alt="Logo navbar"
+          width={80}
+          height={30}
+        />
         {
           (token) &&
           <div>
@@ -37,9 +43,15 @@ export default function Navbar() {
         {
           (!token) &&
           <div>
-            <Link href="/user/login" className="text-white hover:underline">Iniciar sesión</Link>
+            <Link href="/user/login" className="text-white hover:underline">
+              <i className="bi bi-box-arrow-in-right mx-1"/>
+              Iniciar sesión
+            </Link>
             <span className="mx-2 text-white">|</span>
-            <Link href="/user/register" className="text-white hover:underline">Registrarse</Link>
+            <Link href="/user/register" className="text-white hover:underline pr-2">
+              <i className="bi bi-clipboard2-check mx-1"/>
+              Registrarse
+            </Link>
           </div>
         }
       </div>
