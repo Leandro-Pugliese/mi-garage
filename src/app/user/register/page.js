@@ -40,7 +40,7 @@ export default function Register() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [password2, setPassword2] = useState('');
-    const [telefono, setTelefono] = useState('');
+    const [phone, setPhone] = useState('');
     const [acceptedTerms, setAcceptedTerms] = useState(false);
 
     //Hooks para msj
@@ -80,7 +80,7 @@ export default function Register() {
                 setShowErrorMsj(true);
                 return
             }
-            let pais = selectedCountry;
+            let country = selectedCountry;
             if (selectedCountry === "Otro") {
                 if (otherCountry === "") {
                     setMensaje("¡Debes completar el país!");
@@ -88,14 +88,14 @@ export default function Register() {
                     setShowErrorMsj(true);
                     return 
                 }
-                pais = otherCountry
+                country = otherCountry
             }
-            const provincia = selectedProvince;
+            const province = selectedProvince;
             setLoader(true)
             const config = {
                 method: "post",
                 url: "/user/create",
-                data: { email, pais, provincia, telefono, password },
+                data: { email, country, province, phone, password },
                 headers: {
                   "Content-Type": "application/json",
                 },
@@ -203,7 +203,7 @@ export default function Register() {
                         <input 
                             type="number" 
                             id="phone" 
-                            onChange={(e) => setTelefono(Number(e.target.value))}
+                            onChange={(e) => setPhone(Number(e.target.value))}
                             className="bg-transparent border border-violet-300 p-2 w-full rounded text-white" 
                             placeholder="Ej: 54 9 1130443344 (sin el +)" 
                         />

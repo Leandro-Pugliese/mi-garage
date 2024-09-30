@@ -72,7 +72,6 @@ export default function AddVehicles() {
                 aseguradora: "",
                 cobertura: ""
             }
-            //Revisar que hacer con el seguro.
             if (company !== "") {
                 seguro = {
                     aseguradora: company,
@@ -210,10 +209,10 @@ export default function AddVehicles() {
                         onChange={(e) => setCoverage(e.target.value)}
                     >
                         <option className='bg-violet-600' value="">-</option>
-                        <option className='bg-violet-600' value="CIVIL">Resp. Civil</option>
-                        <option className='bg-violet-600' value="TERCEROS">Terceros completo</option>
-                        <option className='bg-violet-600' value="GRANIZO">Terceros completo con granizo</option>
-                        <option className='bg-violet-600' value="TODO">Todo Riesgo</option>
+                        <option className='bg-violet-600' value="RESP. CIVIL">Resp. Civil</option>
+                        <option className='bg-violet-600' value="TERCEROS COMPLETO">Terceros completo</option>
+                        <option className='bg-violet-600' value="TERCEROS COMPLETO GRANIZO">Terceros completo con granizo</option>
+                        <option className='bg-violet-600' value="TODO RIESGO">Todo Riesgo</option>
                     </select>
                 </div>
                 <div className="mb-4">

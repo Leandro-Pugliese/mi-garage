@@ -24,7 +24,7 @@ export default function Vehicles() {
     }
 
     //Hook para loader
-    const [loader, setLoader] = useState(false);
+    const [loader, setLoader] = useState(true);
 
     //Hooks para msj
     const [mensaje, setMensaje] = useState("");
@@ -74,15 +74,19 @@ export default function Vehicles() {
                 vehicles.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
                     {vehicles.map((vehicle) => (
-                        <div key={vehicle._id} className="bg-violet-800 shadow-md rounded-lg p-6">
-                            <h2 className="text-white text-xl font-bold mb-2">{vehicle.marca} {vehicle.modelo} ({vehicle.year})</h2>
+                        <div key={vehicle._id} className="bg-violet-800 shadow-md rounded-lg p-5">
+                            <h2 className="text-white text-xl font-bold mb-2">{vehicle.brand} {vehicle.model} ({vehicle.year})</h2>
                             <p className="text-white"><strong>Patente:</strong> {vehicle.patente}</p>
-                            <p className="text-white"><strong>Combustible:</strong> {vehicle.combustible}</p>
-                            <p className="text-white"><strong>GNC:</strong> {vehicle.gnc ? 'Sí' : 'No'}</p>
-                            <p className="text-white"><strong>Seguro:</strong> {vehicle.seguro.nombre}</p>
-                            <p className="text-white"><strong>Uso:</strong> {vehicle.uso}</p>
-                            <p className="text-white"><strong>Kilometraje:</strong> {vehicle.kilometraje} km</p>
-                            <p className="text-white"><strong>Última actualización:</strong> {new Date(vehicle.kilometrajeActualizado).toLocaleDateString()}</p>
+                            <p className="text-white"><strong>Combustible:</strong> {vehicle.fuel}</p>
+                            <p className="text-white"><strong>GNC:</strong> {vehicle.gnc ? 'SI' : 'NO'}</p>
+                            <p className="text-white"><strong>Seguro:</strong> {vehicle.seguro.aseguradora}</p>
+                            <p className="text-white"><strong>Cobertura:</strong> {vehicle.seguro.cobertura}</p>
+                            <p className="text-white"><strong>Uso:</strong> {vehicle.use}</p>
+                            <p className="text-white"><strong>Kilometraje:</strong> {vehicle.km} km</p>
+                            <p className="text-white mb-3"><strong>Última actualización:</strong> {new Date(vehicle.updatedKm).toLocaleDateString()}</p>
+                            <Link href={`/vehicles/update/${vehicle._id}`} className=' bg-pink-700 text-white cursor-pointer p-2 w-full rounded hover:bg-pink-600'>
+                                Modificar Vehículo
+                            </Link>
                         </div>
                     ))}
                     </div>

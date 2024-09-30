@@ -18,6 +18,9 @@ const geistMono = localFont({
 export const metadata = {
   title: "Mi Garage",
   description: "Alertas para el mantenimiento de tu vehículo",
+  icons: {
+    icon: '/images/favicon.png',
+  },
 };
 
 export default function RootLayout({ children }) {
