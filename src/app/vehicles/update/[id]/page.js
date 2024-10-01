@@ -5,6 +5,7 @@ import axios from '@/app/utils/axios';
 import { useRouter } from 'next/navigation'
 import { useParams } from 'next/navigation';
 import Loader from '@/components/loader';
+import Message from '@/components/message';
 
 export default function UpdateVehicle() {
 
@@ -154,8 +155,7 @@ export default function UpdateVehicle() {
                   "Authorization": token
                 },
             };
-            const response = await axios(config);
-            setVehicle(response.data);
+            await axios(config);
             setShowMsj(false);
             setShowErrorMsj(false);
             setLoader(false);
@@ -471,7 +471,7 @@ export default function UpdateVehicle() {
                                 <input
                                     type="text"
                                     id="company"
-                                    onChange={(e) => setCompany((e.target.value.toLocaleUpperCase()))}
+                                    onChange={(e) => setCompany((e.target.value.toUpperCase()))}
                                     className="bg-transparent border border-violet-300 p-2 w-full rounded text-white"
                                     placeholder="Compañia..."
                                 />
@@ -603,7 +603,14 @@ export default function UpdateVehicle() {
                             Guardar
                         </button>
                     </div>
-                    
+                    {
+                        (showErrorMsj || showMsj) && 
+                        <Message 
+                            mensaje={mensaje}
+                            showErrorMsj={showErrorMsj}
+                            showMsj={showMsj}
+                        />
+                    }
                 </div>
             }
         </div>

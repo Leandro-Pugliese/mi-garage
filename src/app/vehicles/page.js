@@ -1,11 +1,11 @@
 "use client";
-
 import { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
 import axios from '../utils/axios';
-//import { useRouter } from 'next/router'; // Si uso este tengo que usarlo directo como useRouter().push()
-import { useRouter } from 'next/navigation' //Asi puedo usarlo como constante.
+import { useRouter } from 'next/navigation'
 import Link from 'next/link';
+import Loader from '@/components/loader';
+import DeleteVehiclePopUp from '@/components/deleteVehiclePopUp';
 
 export default function Vehicles() {
     
@@ -25,6 +25,15 @@ export default function Vehicles() {
 
     //Hook para loader
     const [loader, setLoader] = useState(true);
+
+    //Hook para popUp
+    const [showPopUp, setShowPopUp] = useState(false)
+    const modifyShowPopUp = (indicador) => {
+        setShowPopUp(false);
+        if (indicador === "Reload") {
+            window.location.reload()
+        }
+    }
 
     //Hooks para msj
     const [mensaje, setMensaje] = useState("");
@@ -69,36 +78,66 @@ export default function Vehicles() {
 
     return (
         <div className="container min-h-screen mx-auto px-4 py-6 bg-gray-800">
-            <h1 className="text-2xl font-bold mb-6 text-white">Mis Vehículos</h1>
             {
-                vehicles.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-                    {vehicles.map((vehicle) => (
-                        <div key={vehicle._id} className="bg-violet-800 shadow-md rounded-lg p-5">
-                            <h2 className="text-white text-xl font-bold mb-2">{vehicle.brand} {vehicle.model} ({vehicle.year})</h2>
-                            <p className="text-white"><strong>Patente:</strong> {vehicle.patente}</p>
-                            <p className="text-white"><strong>Combustible:</strong> {vehicle.fuel}</p>
-                            <p className="text-white"><strong>GNC:</strong> {vehicle.gnc ? 'SI' : 'NO'}</p>
-                            <p className="text-white"><strong>Seguro:</strong> {vehicle.seguro.aseguradora}</p>
-                            <p className="text-white"><strong>Cobertura:</strong> {vehicle.seguro.cobertura}</p>
-                            <p className="text-white"><strong>Uso:</strong> {vehicle.use}</p>
-                            <p className="text-white"><strong>Kilometraje:</strong> {vehicle.km} km</p>
-                            <p className="text-white mb-3"><strong>Última actualización:</strong> {new Date(vehicle.updatedKm).toLocaleDateString()}</p>
-                            <Link href={`/vehicles/update/${vehicle._id}`} className=' bg-pink-700 text-white cursor-pointer p-2 w-full rounded hover:bg-pink-600'>
-                                Modificar Datos
-                            </Link>
-                        </div>
-                    ))}
-                    </div>
-                ) : (
-                    <div>
-                        <p className="text-white mb-5">No tienes vehículos cargados.</p>
-                    </div>
-                )
+                (loader) &&
+                <Loader />
             }
-            <Link href="/vehicles/add" className='bg-pink-700 text-white cursor-pointer p-2 mb-5 w-full rounded hover:bg-pink-600'>
-                Agregar Vehículo
-            </Link>
+            {
+                (!loader) &&
+                <>
+                    <h1 className="text-2xl font-bold mb-6 text-white">Mis Vehículos</h1>
+                    {
+                        vehicles.length > 0 ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+                            {vehicles.map((vehicle) => (
+                                <div key={vehicle._id} className="bg-violet-800 shadow-md rounded-lg p-5">
+                                    <h2 className="text-white text-xl font-bold mb-2">{vehicle.brand} {vehicle.model} ({vehicle.year})</h2>
+                                    <p className="text-white"><strong>Patente:</strong> {vehicle.patente}</p>
+                                    <p className="text-white"><strong>Combustible:</strong> {vehicle.fuel}</p>
+                                    <p className="text-white"><strong>GNC:</strong> {vehicle.gnc ? 'SI' : 'NO'}</p>
+                                    <p className="text-white"><strong>Seguro:</strong> {vehicle.seguro.aseguradora}</p>
+                                    <p className="text-white"><strong>Cobertura:</strong> {vehicle.seguro.cobertura}</p>
+                                    <p className="text-white"><strong>Uso:</strong> {vehicle.use}</p>
+                                    <p className="text-white"><strong>Kilometraje:</strong> {vehicle.km} km</p>
+                                    <p className="text-white mb-3"><strong>Última actualización:</strong> {new Date(vehicle.updatedKm).toLocaleDateString()}</p>
+                                    <div className='flex w-full justify-between'>
+                                        <Link href={`/vehicles/update/${vehicle._id}`} className=' bg-pink-700 text-white cursor-pointer p-2 rounded hover:bg-pink-600'>
+                                            Modificar Datos
+                                        </Link>
+                                        <button onClick={() => setShowPopUp(true)} className=' bg-pink-700 text-white cursor-pointer p-2 rounded hover:bg-pink-600'>
+                                            Eliminar Vehículo
+                                        </button>
+                                    </div>
+                                    <div className='flex w-full'>
+                                        <Link href={`/vehicles/update/${vehicle._id}`} className='flex items-center justify-center mt-5 bg-pink-700 text-white cursor-pointer p-2 w-full rounded hover:bg-pink-600'>
+                                            Actividades
+                                        </Link>
+                                    </div>
+                                    {
+                                        (!loader && showPopUp) &&
+                                        <DeleteVehiclePopUp 
+                                            vehicleId={vehicle._id}
+                                            brand={vehicle.brand}
+                                            model={vehicle.model}
+                                            patente={vehicle.patente}
+                                            modifyShowPopUp={modifyShowPopUp}
+                                            token={token}
+                                        />
+                                    }
+                                </div>
+                            ))}
+                            </div>
+                        ) : (
+                            <div>
+                                <p className="text-white mb-5">No tienes vehículos cargados.</p>
+                            </div>
+                        )
+                    }
+                    <Link href="/vehicles/add" className='bg-pink-700 text-white cursor-pointer p-2 mb-5 w-full rounded hover:bg-pink-600'>
+                        Agregar Vehículo
+                    </Link>
+                </>
+            }
         </div>
     );
 };
