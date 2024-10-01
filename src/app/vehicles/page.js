@@ -85,7 +85,7 @@ export default function Vehicles() {
                             <p className="text-white"><strong>Kilometraje:</strong> {vehicle.km} km</p>
                             <p className="text-white mb-3"><strong>Última actualización:</strong> {new Date(vehicle.updatedKm).toLocaleDateString()}</p>
                             <Link href={`/vehicles/update/${vehicle._id}`} className=' bg-pink-700 text-white cursor-pointer p-2 w-full rounded hover:bg-pink-600'>
-                                Modificar Vehículo
+                                Modificar Datos
                             </Link>
                         </div>
                     ))}

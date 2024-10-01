@@ -48,7 +48,7 @@ export default function Home() {
         }
       };
       const response = await axios(config);
-      setIsEmailVerified(response.data.verificado)
+      setIsEmailVerified(response.data.verify)
     } catch (error) {
       console.log(error)
     }
