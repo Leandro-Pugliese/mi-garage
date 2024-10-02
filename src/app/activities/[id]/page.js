@@ -109,7 +109,7 @@ export default function Activities() {
             {
                 (!loader) &&
                 <>
-                    <h1 className="text-2xl font-bold mb-6 text-white">Actividades del dominio: {vehicle.patente}</h1>
+                    <h1 className="text-2xl font-bold mb-6 text-white">Actividades del dominio: {vehicle.patente || `-`}</h1>
                     {
                         activities.length > 0 ? (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
@@ -120,16 +120,39 @@ export default function Activities() {
                                     <p className="text-white"><strong>Fecha:</strong> {new Date(activity.date).toLocaleDateString()}</p>
                                     <p className="text-white"><strong>Kilometraje:</strong> {activity.km}</p>
                                     {
-                                        (activity.image.url) &&
-                                        <p className="text-white"><strong>Ver Imagen:</strong> {activity.image.url}</p>
+                                        (activity.nextDate.tiene) &&
+                                        <p className="text-white"><strong>Próxima fecha:</strong> {new Date(activity.nextDate.date).toLocaleDateString()}</p>
                                     }
-                                    
-                                        <p className="text-white"><strong>Próxima fecha:</strong> {new Date(activity.nextDate.date).toLocaleDateString() || "NO"}</p>
-                                    
-                                    
-                                        <p className="text-white"><strong>Próximo kilometraje:</strong> {`${activity.nextKm.km}km` || "NO"}</p>
-                                    
-                                    <p className="text-white"><strong>Activa:</strong> {activity.active ? 'SI' : 'NO'}</p>
+                                    {
+                                        (!activity.nextDate.tiene) &&
+                                        <p className="text-white"><strong>Próxima fecha:</strong> No </p>
+                                    }
+                                    {
+                                        (activity.nextKm.tiene) &&
+                                        <p className="text-white"><strong>Próximo kilometraje:</strong> {`${activity.nextKm.km}km`}</p>
+                                    }
+                                    {
+                                        (!activity.nextKm.tiene) &&
+                                        <p className="text-white"><strong>Próximo kilometraje:</strong> No </p>
+                                    }
+                                    <p className="text-white"><strong>Activa:</strong> {activity.active ? 'Si' : 'No'}</p>
+                                    {
+                                        (activity.image.url !== "") &&
+                                        <p className="text-white"><strong>Imagen: </strong> 
+                                            <Link
+                                                href={activity.image.url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="underline"
+                                            >
+                                                Ver imagen
+                                            </Link>
+                                        </p>
+                                    }
+                                    {
+                                        (activity.image.url === "") &&
+                                        <p className="text-white"><strong>Imagen:</strong> Sin imagen </p>
+                                    }
                                     <div className='flex w-full justify-between mt-4'>
                                         <Link href={`/activities/update/${activity._id}`} className=' bg-pink-700 text-white cursor-pointer p-2 rounded hover:bg-pink-600'>
                                             Modificar Datos

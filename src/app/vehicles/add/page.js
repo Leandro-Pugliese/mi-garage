@@ -240,7 +240,7 @@ export default function AddVehicles() {
                 </div>
                 {
                     (!loader) &&
-                    <button onClick={handleSubmit} className="bg-violet-800 text-white py-2 px-4 w-full rounded cursor-pointer hover:bg-violet-700">Ingresar</button>
+                    <button onClick={handleSubmit} className="bg-violet-800 text-white py-2 px-4 w-full rounded cursor-pointer hover:bg-violet-700">Agregar</button>
                 }
                 {
                     (loader) &&

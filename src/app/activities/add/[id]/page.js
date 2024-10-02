@@ -5,6 +5,7 @@ import Cookies from 'js-cookie';
 import { useRouter, useParams } from 'next/navigation'
 import Message from '@/components/message';
 import Loader from '@/components/loader';
+import next from 'next';
 
 
 export default function AddVehicles() {
@@ -38,11 +39,23 @@ export default function AddVehicles() {
     const [type, setType] = useState("");
     const [description, setDescription] = useState("");
     const [km, setKm] = useState(0);
-    const [date, setDate] = useState("");
+    const [date, setDate] = useState(new Date(Date.now));
     const [isNextDate, setIsNextDate] = useState(false);
     const [nextDate, setNextDate] = useState("");
     const [isNextKm, setIsNextKm] = useState(false);
     const [nextKm, setNextKm] = useState(0);
+    //Hooks para subir imagen y boton cargar imagen
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [changeFile, setChangeFile] = useState('');
+    const [selectedFileName, setSelectedFileName] = useState('');
+    const handleFileChange = (event) => {
+        const file = event.target.files[0]
+        setSelectedFile(file);
+        if (file) {
+            setChangeFile("Cambiar Imagen")
+            setSelectedFileName(file.name);
+        }
+    };
 
     //id para ruta dinámica
     const { id } = useParams();
@@ -52,45 +65,77 @@ export default function AddVehicles() {
         setShowMsj(false);
         setShowErrorMsj(false);
         try {
-            if (type === "" || description === "" ||  date === "" || isNextDate === "" || isNextKm === "") {
+            if (type === "" || description === "" || isNextDate === "" || isNextKm === "") {
                 setMensaje("Debes completar todos los campos obligatorios.");
                 setShowMsj(false);
                 setShowErrorMsj(true);
                 return
             }
-            if (km <= 0) {
-                setMensaje("El kilometraje del vehículo no puede ser negativo o cero.");
+            if (km < 0) {
+                setMensaje("El kilometraje del vehículo no puede ser negativo.");
                 setShowMsj(false);
                 setShowErrorMsj(true);
                 return
             }
-            if (isNextKm === "SI" && nextKm <= 0) {
+            if (isNextKm === true && nextKm <= 0) {
                 setMensaje("El kilometraje próximo del vehículo no puede ser negativo o cero.");
                 setShowMsj(false);
                 setShowErrorMsj(true);
                 return
             }
-            if (isNextDate === "SI" && nextDate === "") {
+            if (isNextDate === true && nextDate === "") {
                 setMensaje("Debes completar la próxima fecha de realización de la actividad.");
                 setShowMsj(false);
                 setShowErrorMsj(true);
                 return
             }
             setLoader(true);
-            const config = {
-                method: "post",
-                url: `/activity/create/${id}`,
-                data: { type, description, km, date, isNextDate, nextDate, isNextKm, nextKm},
-                headers: {
-                "Content-Type": "application/json",
-                "Authorization": token
-                },
-            };
-            const response = await axios(config);
-            setShowMsj(false);
-            setShowErrorMsj(false);
-            setLoader(false);
-            router.push(`/activities/${response.data.activity.vehicle}`);
+            if (!userPremium) {            
+                const config = {
+                    method: "post",
+                    url: `/activity/create/${id}`,
+                    data: { type, description, km, date, isNextDate, nextDate, isNextKm, nextKm},
+                    headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": token
+                    },
+                };
+                const response = await axios(config);
+                setShowMsj(false);
+                setShowErrorMsj(false);
+                setLoader(false);
+                router.push(`/activities/${response.data.activity.vehicle}`);
+            } else if (userPremium){
+                // Armo un objeto FormData para poder enviar la imagen
+                const formData = new FormData();
+                formData.append('imagen', selectedFile);
+                formData.append('type', type);
+                formData.append('description', description);
+                formData.append('km', km);
+                formData.append('date', date);
+                formData.append('isNextDate', isNextDate);
+                formData.append('nextDate', nextDate);
+                formData.append('isNextKm', isNextKm);
+                formData.append('nextKm', nextKm);
+                const config = {
+                    method: "post",
+                    url: `/activity/create-premium/${id}`,
+                    data: formData,
+                    headers: {
+                    "Content-Type": "multipart/form-data",
+                    "Authorization": token
+                    },
+                };
+                const response = await axios(config);
+                setShowMsj(false);
+                setShowErrorMsj(false);
+                setLoader(false);
+                router.push(`/activities/${response.data.activity.vehicle}`);
+            } else {
+                setMensaje("Tipo de usuario no difinido.");
+                setShowMsj(false);
+                setShowErrorMsj(true);
+            }
         } catch (error) {
             setMensaje("Error");
             setShowMsj(false);
@@ -100,8 +145,8 @@ export default function AddVehicles() {
         }
     }
 
-
-    const [userData, setUserData] = useState([]);
+    const [userCategories, setUserCategories] = useState([]);
+    const [userPremium, setUserPremium] = useState(false);
 
     const getUser = async () => {
         setShowMsj(false);
@@ -118,7 +163,8 @@ export default function AddVehicles() {
             };
             const response = await axios(config);
             console.log(response.data)
-            setUserData(response.data.categories)
+            setUserCategories(response.data.categories)
+            setUserPremium(response.data.premium)
             setLoader(false)
         } catch (error) {
             setMensaje("Error");
@@ -135,13 +181,14 @@ export default function AddVehicles() {
         }
     }, [token]);
 
+
     return (
         <div className='flex flex-col items-center justify-center'>
             <form className="p-8 w-96">
                 <h2 className="text-2xl font-bold mb-4 text-white">Cargar Actividad</h2>
                 <div className="mb-4">
                     <label htmlFor="type" className="block mb-1 text-white">Tipo de actividad</label>
-                    { userData.length > 0 &&
+                    { userCategories.length > 0 &&
                     <select
                         className="bg-transparent border border-violet-300 p-2 w-full rounded text-white"
                         id="type"
@@ -150,7 +197,7 @@ export default function AddVehicles() {
                     >
                         <option className="bg-violet-600" value="-">-</option>
                         {
-                            userData.map((element, index) => (
+                            userCategories.map((element, index) => (
                                 <option className="bg-violet-600" key={index} value={element}>
                                     {element}
                                 </option>
@@ -170,7 +217,7 @@ export default function AddVehicles() {
                     />
                 </div>
                 <div className="mb-4">
-                    <label htmlFor="km" className="block mb-1 text-white">Kilometraje del vehículo</label>
+                    <label htmlFor="km" className="block mb-1 text-white">Kilometraje (sin puntos ni comas)</label>
                     <input
                         type="number"
                         id="km"
@@ -236,6 +283,27 @@ export default function AddVehicles() {
                             className="bg-transparent border border-violet-300 p-2 w-full rounded text-white"
                             placeholder="Ej 73000..."
                             disabled={!isNextKm}
+                        />
+                    </div>
+                }
+                <div className='flex text-white mb-2'>
+                    Imagen (opcional):
+                    <p className='ml-2 text-white'>{selectedFileName}</p>    
+                </div>
+                {
+                    (userPremium) &&
+                    <div className="flex items-center justify-left space-x-4 mb-4">
+                        <label
+                            htmlFor="fileInput"
+                            className="cursor-pointer bg-pink-800 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded"
+                        >
+                            {changeFile || 'Seleccionar Imagen'}
+                        </label>
+                        <input type="file" 
+                            accept="image/*" 
+                            onChange={handleFileChange} 
+                            id="fileInput" 
+                            className="hidden"
                         />
                     </div>
                 }
