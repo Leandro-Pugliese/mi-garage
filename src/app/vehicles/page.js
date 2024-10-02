@@ -109,7 +109,7 @@ export default function Vehicles() {
                                         </button>
                                     </div>
                                     <div className='flex w-full'>
-                                        <Link href={`/vehicles/update/${vehicle._id}`} className='flex items-center justify-center mt-5 bg-pink-700 text-white cursor-pointer p-2 w-full rounded hover:bg-pink-600'>
+                                        <Link href={`/activities/${vehicle._id}`} className='flex items-center justify-center mt-5 bg-pink-700 text-white cursor-pointer p-2 w-full rounded hover:bg-pink-600'>
                                             Actividades
                                         </Link>
                                     </div>
