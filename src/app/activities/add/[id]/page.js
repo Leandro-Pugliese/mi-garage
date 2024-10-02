@@ -1,12 +1,10 @@
 "use client";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import axios from '@/app/utils/axios'
 import Cookies from 'js-cookie';
 import { useRouter, useParams } from 'next/navigation'
 import Message from '@/components/message';
 import Loader from '@/components/loader';
-import next from 'next';
-
 
 export default function AddVehicles() {
 
@@ -181,6 +179,24 @@ export default function AddVehicles() {
         }
     }, [token]);
 
+    //Hook para evitar cambio del valor del input en input tipo number y date.
+    useEffect(() => {
+        // Agarro todos los inputs de tipo number y date
+        const inputs = document.querySelectorAll('input[type="number"], input[type="date"]');
+        const preventScroll = (event) => {
+          event.preventDefault();
+        };
+        inputs.forEach((input) => {
+          input.addEventListener('wheel', preventScroll);
+        });
+        // Hago un cleanup al desmontar el componente
+        return () => {
+          inputs.forEach((input) => {
+            input.removeEventListener('wheel', preventScroll);
+          });
+        };
+    }, []);
+
 
     return (
         <div className='flex flex-col items-center justify-center'>
@@ -286,10 +302,13 @@ export default function AddVehicles() {
                         />
                     </div>
                 }
-                <div className='flex text-white mb-2'>
-                    Imagen (opcional):
-                    <p className='ml-2 text-white'>{selectedFileName}</p>    
-                </div>
+                {
+                    (userPremium) &&
+                    <div className='flex text-white mb-2'>
+                        Imagen (opcional):
+                        <p className='ml-2 text-white'>{selectedFileName}</p>    
+                    </div>
+                }
                 {
                     (userPremium) &&
                     <div className="flex items-center justify-left space-x-4 mb-4">

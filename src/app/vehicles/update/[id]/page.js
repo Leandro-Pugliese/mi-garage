@@ -169,6 +169,24 @@ export default function UpdateVehicle() {
         }
     }
 
+    //Hook para evitar cambio del valor del input en input tipo number y date.
+    useEffect(() => {
+        // Agarro todos los inputs de tipo number y date
+        const inputs = document.querySelectorAll('input[type="number"], input[type="date"]');
+        const preventScroll = (event) => {
+          event.preventDefault();
+        };
+        inputs.forEach((input) => {
+          input.addEventListener('wheel', preventScroll);
+        });
+        // Hago un cleanup al desmontar el componente
+        return () => {
+          inputs.forEach((input) => {
+            input.removeEventListener('wheel', preventScroll);
+          });
+        };
+    }, []);
+
 
     return (
         <div className='flex justify-center container min-h-screen mx-auto px-4 py-6 bg-gray-800'>

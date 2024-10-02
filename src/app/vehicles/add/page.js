@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect } from 'react';
 import axios from '@/app/utils/axios'
 import Cookies from 'js-cookie';
@@ -100,7 +99,25 @@ export default function AddVehicles() {
             console.error('Error al registrar el usuario:', error.response.data);
             setLoader(false)
         }
-      }
+    }
+
+    //Hook para evitar cambio del valor del input en input tipo number y date.
+    useEffect(() => {
+        // Agarro todos los inputs de tipo number y date
+        const inputs = document.querySelectorAll('input[type="number"], input[type="date"]');
+        const preventScroll = (event) => {
+          event.preventDefault();
+        };
+        inputs.forEach((input) => {
+          input.addEventListener('wheel', preventScroll);
+        });
+        // Hago un cleanup al desmontar el componente
+        return () => {
+          inputs.forEach((input) => {
+            input.removeEventListener('wheel', preventScroll);
+          });
+        };
+    }, []);
 
     return (
         <div className='flex flex-col items-center justify-center'>

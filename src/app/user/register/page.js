@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/solid';
 import axios from '@/app/utils/axios';
 import paisesv2 from "@/app/utils/paisesv2";
@@ -117,6 +117,24 @@ export default function Register() {
 
     //Hook para boton ver password
     const [showPassword, setShowPassword] = useState(false);
+
+    //Hook para evvitar cambio del valor del input en input tipo number
+    useEffect(() => {
+        // Agarro todos los inputs de tipo number.
+        const inputs = document.querySelectorAll('input[type="number"]');
+        const preventScroll = (event) => {
+          event.preventDefault();
+        };
+        inputs.forEach((input) => {
+          input.addEventListener('wheel', preventScroll);
+        });
+        // Hago un cleanup al desmontar el componente
+        return () => {
+          inputs.forEach((input) => {
+            input.removeEventListener('wheel', preventScroll);
+          });
+        };
+      }, []);
 
     return (
         <div className="flex flex-col items-center min-h-screen bg-gray-800">
