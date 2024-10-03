@@ -7,7 +7,7 @@ import { useParams } from 'next/navigation';
 import Loader from '@/components/loader';
 import Message from '@/components/message';
 
-export default function UpdateVehicle() {
+export default function UpdateActivity() {
 
     const router = useRouter();
     const [token, setToken] = useState(null)
@@ -33,31 +33,62 @@ export default function UpdateVehicle() {
     const [mensaje, setMensaje] = useState("");
     const [showMsj, setShowMsj] = useState(false);
     const [showErrorMsj, setShowErrorMsj] = useState(false);
+
+    //Hook para info del usuario
+    const [userPremium, setUserPremium] = useState(false);
+    const [userCategories, setUserCategories] = useState(["-"])
     
-    //Hook para data vehiculo
-    const [vehicle, setVehicle] = useState(null);
+    const getUser = async () => {
+        setShowMsj(false);
+        setShowErrorMsj(false);
+        try {
+            setLoader(true);
+            const config = {
+                method: "get",
+                url: "/user/data",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": token
+                },
+            };
+            const response = await axios(config);
+            setUserPremium(response.data.premium);
+            setUserCategories(response.data.categories);
+            setLoader(false);
+        } catch (error) {
+            setMensaje("Error");
+            setShowMsj(false);
+            setShowErrorMsj(true);
+            console.error('Error al obtener datos del usuario:', error);
+            setLoader(false)
+        }
+    }
+
+    //Hook para data actividad
+    const [activity, setActivity] = useState(null);
 
     //id para ruta dinámica
     const { id } = useParams();
 
-    const getVehicle = async () => {
+    const getActivity = async () => {
         try {
             setLoader(true)
             const config = {
                 method: "get",
-                url: `/vehicle/data/${id}`,
+                url: `/activity/data/${id}`,
                 headers: {
                   "Content-Type": "application/json",
                   "Authorization": token
                 },
             };
             const response = await axios(config);
-            setVehicle(response.data);
+            setActivity(response.data);
+            setChangeStateNextDate(response.data.nextDate.tiene)
             setShowMsj(false);
             setShowErrorMsj(false);
             setLoader(false);
         } catch (error) {
-            setMensaje(error.response.data);
+            setMensaje("Error");
             setShowMsj(false);
             setShowErrorMsj(true);
             console.error('Error:', error);
@@ -67,99 +98,139 @@ export default function UpdateVehicle() {
 
     useEffect(() => {
         if (token) {
-            getVehicle();
+            getUser();
+            getActivity();
         }
     }, [token]);
 
     //Hooks para info a modificar
     const [type, setType] = useState(undefined);
-    const [brand, setBrand] = useState(null);
-    const [model, setModel] = useState(null);
-    const [year, setYear] = useState(null);
-    const [patente, setPatente] = useState(null);
-    const [fuel, setFuel] = useState(undefined);
-    const [gnc, setGnc] = useState(undefined);
-    const [company, setCompany] = useState(null);
-    const [coverage, setCoverage] = useState(null);
-    const [use, setUse] = useState(undefined);
+    const [description, setDescription] = useState(null);
     const [km, setKm] = useState(null);
+    const [date, setDate] = useState(null);
+    const [isNextDate, setIsNextDate] = useState(null);
+    const [nextDate, setNextDate] = useState(null);
+    const [isNextKm, setIsNextKm] = useState(null);
+    const [nextKm, setNextKm] = useState(null);
+    const [deleteImage, setDeleteImage] = useState(false);
+    //Hooks para subir imagen y boton cargar imagen
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [changeFile, setChangeFile] = useState('');
+    const [selectedFileName, setSelectedFileName] = useState('');
+    const handleFileChange = (event) => {
+        const file = event.target.files[0]
+        setSelectedFile(file);
+        if (file) {
+            setChangeFile("Cambiar Imagen")
+            setSelectedFileName(file.name);
+        }
+    };
 
     //Hooks para renderizar info o input para modificar info.
     const [modifyType, setModifyType] = useState(false);
-    const [modifyBrand, setModifyBrand] = useState(false);
-    const [modifyModel, setModifyModel] = useState(false);
-    const [modifyYear, setModifyYear] = useState(false);
-    const [modifyPatente, setModifyPatente] = useState(false);
-    const [modifyFuel, setModifyFuel] = useState(false);
-    const [modifyGnc, setModifyGnc] = useState(false);
-    const [modifyCompany, setModifyCompany] = useState(false);
-    const [modifyCoverage, setModifyCoverage] = useState(false);
-    const [modifyUse, setModifyUse] = useState(false);
+    const [modifyDescription, setModifyDescription] = useState(false);
     const [modifyKm, setModifyKm] = useState(false);
-
-
+    const [modifyDate, setModifyDate] = useState(false);
+    const [modifyIsNextDate, setModifyIsNextDate] = useState(false);
+    const [modifyNextDate, setModifyNextDate] = useState(false);
+    const [changeStateNextDate, setChangeStateNextDate] = useState(false);
+    const [modifyNextKm, setModifyNextKm] = useState(false);
+    const [modifyIsNextKm, setModifyIsNextKm] = useState(false);
+    const [modifySelectedFile, setModifySelectedFile] = useState(false);
+    
     const cancelType = () => {
         setType(undefined);
         setModifyType(false);
     }
-    const cancelBrand = () => {
-        setBrand(null);
-        setModifyBrand(false);
-    }
-    const cancelModel = () => {
-        setModel(null);
-        setModifyModel(false);
-    }
-    const cancelYear = () => {
-        setYear(null);
-        setModifyYear(false);
-    }
-    const cancelPatente = () => {
-        setPatente(null);
-        setModifyPatente(false);
-    }
-    const cancelFuel = () => {
-        setFuel(undefined);
-        setModifyFuel(false);
-    }
-    const cancelGnc = () => {
-        setGnc(undefined);
-        setModifyGnc(false);
-    }
-    const cancelCompany = () => {
-        setCompany(null);
-        setModifyCompany(false);
-    }
-    const cancelCoverage = () => {
-        setCoverage(null);
-        setModifyCoverage(false);
-    }
-    const cancelUse = () => {
-        setUse(undefined);
-        setModifyUse(false);
+    const cancelDescription = () => {
+        setDescription(null);
+        setModifyDescription(false);
     }
     const cancelKm = () => {
         setKm(null);
         setModifyKm(false);
     }
+    const cancelDate = () => {
+        setDate(null);
+        setModifyDate(false);
+    }
+    const cambiarIsNextDate = () => {
+        setIsNextDate(!activity.nextDate.tiene);
+        setModifyIsNextDate(true);
+        setChangeStateNextDate(!changeStateNextDate);
+    }
+    const cancelIsNextDate = () => {
+        setIsNextDate(null);
+        setModifyIsNextDate(false);
+        setChangeStateNextDate(!changeStateNextDate);
+    }
+    const cancelNextDate = () => {
+        setNextDate(null);
+        setModifyNextDate(false);
+    }
+    const cancelIsNextKm = () => {
+        setIsNextKm(null);
+        setModifyIsNextKm(false);
+    }
+    const cancelNextKm = () => {
+        setNextKm(null);
+        setModifyNextKm(false);
+    }
+    const cancelSelectedFile = () => {
+        setSelectedFile(null);
+        setModifySelectedFile(false);
+    }
 
-    const updateVehicle = async () => {
+    const updateActivity = async () => {
         try {
             setLoader(true)
-            const config = {
-                method: "put",
-                url: `/vehicle/update/${id}`,
-                data: {type, brand, model, year, patente, fuel, gnc, company, coverage, use, km},
-                headers: {
-                  "Content-Type": "application/json",
-                  "Authorization": token
-                },
-            };
-            await axios(config);
-            setShowMsj(false);
-            setShowErrorMsj(false);
-            setLoader(false);
-            router.push("/vehicles")
+            if (userPremium) {
+                // Armo un objeto FormData para poder enviar imagen si hay
+                const formData = new FormData();
+                formData.append('imagen', selectedFile);
+                formData.append('type', type);
+                formData.append('description', description);
+                formData.append('km', km);
+                formData.append('date', date);
+                formData.append('isNextDate', isNextDate);
+                formData.append('nextDate', nextDate);
+                formData.append('isNextKm', isNextKm);
+                formData.append('nextKm', nextKm);
+                formData.append('deleteImage', deleteImage);
+                const config = {
+                    method: "put",
+                    url: `/activity/update-premium/${id}`,
+                    data: formData,
+                    headers: {
+                      "Content-Type": "multipart/form-data",
+                      "Authorization": token
+                    },
+                };
+                await axios(config);
+                setShowMsj(false);
+                setShowErrorMsj(false);
+                setLoader(false);
+                router.push(`/activities/${activity.vehicle}`);
+            } else if (!userPremium) {
+                const config = {
+                    method: "put",
+                    url: `/activity/update-premium/${id}`,
+                    data: {type, description, km, date, isNextDate, nextDate, isNextKm, nextKm, active, deleteImage},
+                    headers: {
+                      "Content-Type": "application/json",
+                      "Authorization": token
+                    },
+                };
+                await axios(config);
+                setShowMsj(false);
+                setShowErrorMsj(false);
+                setLoader(false);
+                router.push(`/activities/${activity.vehicle}`);
+            } else {
+                setMensaje("Tipo de usuario no difinido.");
+                setShowMsj(false);
+                setShowErrorMsj(true);
+            }
         } catch (error) {
             setMensaje(error.response.data);
             setShowMsj(false);
@@ -171,7 +242,7 @@ export default function UpdateVehicle() {
 
     //Hook para evitar cambio del valor del input en input tipo number y date.
     useEffect(() => {
-        if (modifyYear || modifyKm) {
+        if (modifyNextKm || modifyKm || modifyNextDate || modifyDate) {
             // Agarro todos los inputs de tipo number y date
             const inputs = document.querySelectorAll('input[type="number"], input[type="date"]');
             const preventScroll = (event) => {
@@ -187,7 +258,7 @@ export default function UpdateVehicle() {
             });
             };
         }
-    }, [modifyYear, modifyKm]);
+    }, [modifyNextKm, modifyKm, modifyNextDate, modifyDate]);
 
 
     return (
@@ -200,14 +271,15 @@ export default function UpdateVehicle() {
                 (!loader) &&
                 <div className='text-white font-bold w-3/6'>
                     <div className='flex flex-col justify-center items-center'>
+                        <h2 className="text-2xl font-bold mb-4 text-white">Modificar Actividad</h2>
                         <div className='flex items-center w-9/12'>
-                            <label className="text-white pl-1 text-left">Tipo de vehiculo</label>
+                            <label className="text-white pl-1 text-left">Tipo de actividad</label>
                         </div>
                         {
                             (!modifyType) &&
                             <div className='flex w-9/12 mb-4 min-h-16 items-center justify-between'>
                                 <p className='bg-transparent border border-violet-300 rounded w-full mr-3 py-2 px-3 text-white'>
-                                    {vehicle.type}
+                                    {activity.type}
                                 </p>
                                 <button 
                                     onClick={() => setModifyType(!modifyType)}
@@ -227,10 +299,13 @@ export default function UpdateVehicle() {
                                     onChange={(e) => setType(e.target.value)}
                                 >
                                     <option className='bg-violet-600' value="">-</option>
-                                    <option className='bg-violet-600' value="AUTOMÓVIL">Automóvil</option>
-                                    <option className='bg-violet-600' value="MOTOCICLETA">Motocicleta</option>
-                                    <option className='bg-violet-600' value="CAMIÓN">Camión</option>
-                                    <option className='bg-violet-600' value="OTRO">Otro</option>
+                                    {
+                                        userCategories.map((element, index) => (
+                                            <option className="bg-violet-600" key={index} value={element}>
+                                                {element}
+                                            </option>
+                                        ))
+                                    }
                                 </select>
                                 <button 
                                     onClick={cancelType}
@@ -241,16 +316,16 @@ export default function UpdateVehicle() {
                             </div>
                         }
                         <div className='flex items-center w-9/12'>
-                            <label htmlFor="brand" className="block text-white">Marca</label>
+                            <label htmlFor="desc" className="block text-white">Descripción</label>
                         </div>
                         {
-                            (!modifyBrand) &&
+                            (!modifyDescription) &&
                             <div className='flex w-9/12 mb-4 min-h-16 items-center justify-between'>
                                 <p className='bg-transparent border border-violet-300 rounded w-full mr-3 py-2 px-3 text-white'>
-                                    {vehicle.brand}
+                                    {activity.description}
                                 </p>
                                 <button 
-                                    onClick={() => setModifyBrand(!modifyBrand)}
+                                    onClick={() => setModifyDescription(!modifyDescription)}
                                     className='bg-pink-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-pink-600'
                                 >
                                     Modificar
@@ -258,323 +333,17 @@ export default function UpdateVehicle() {
                             </div>
                         }
                         {
-                            (modifyBrand) &&
+                            (modifyDescription) &&
                             <div className="flex mb-4 min-h-16 items-center w-9/12">
                                 <input
                                     type="text"
-                                    id="brand"
-                                    onChange={(e) => setBrand(e.target.value.toUpperCase())}
+                                    id="desc"
+                                    onChange={(e) => setDescription(e.target.value.toUpperCase())}
                                     className="bg-transparent border border-violet-300 p-2 w-full rounded text-white"
-                                    placeholder="Marca..."
+                                    placeholder="Descripción..."
                                 />
                                 <button 
-                                    onClick={cancelBrand}
-                                    className='ml-3 bg-red-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-red-600'
-                                >
-                                    Cancelar
-                                </button>
-                            </div>
-                        }
-                        <div className='flex items-center w-9/12'>
-                            <label htmlFor="model" className="block mb-1 text-white">Modelo</label>
-                        </div>
-                        {
-                            (!modifyModel) &&
-                            <div className='flex w-9/12 mb-4 min-h-16 items-center justify-between'>
-                                <p className='bg-transparent border border-violet-300 rounded w-full mr-3 py-2 px-3 text-white'>
-                                    {vehicle.model}
-                                </p>
-                                <button 
-                                    onClick={() => setModifyModel(!modifyModel)}
-                                    className='bg-pink-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-pink-600'
-                                >
-                                    Modificar
-                                </button>
-                            </div>
-                        }
-                        {
-                            (modifyModel) &&
-                            <div className="flex mb-4 min-h-16 items-center w-9/12">
-                                <input
-                                    type="text"
-                                    id="model"
-                                    onChange={(e) => setModel(e.target.value.toUpperCase())}
-                                    className="bg-transparent border border-violet-300 p-2 w-full rounded text-white"
-                                    placeholder="modelo..."
-                                />
-                                <button 
-                                    onClick={cancelModel}    
-                                    className='ml-3 bg-red-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-red-600'
-                                >
-                                    Cancelar
-                                </button>
-                            </div>
-                        }
-                        <div className='flex items-center w-9/12'>
-                            <label htmlFor="year" className="block text-white">Año</label>
-                        </div>
-                        {
-                            (!modifyYear) &&
-                            <div className='flex w-9/12 mb-4 min-h-16 items-center justify-between'>
-                                <p className='bg-transparent border border-violet-300 rounded w-full mr-3 py-2 px-3 text-white'>
-                                    {vehicle.year}
-                                </p>
-                                <button 
-                                    onClick={() => setModifyYear(!modifyYear)}
-                                    className='bg-pink-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-pink-600'
-                                >
-                                    Modificar
-                                </button>
-                            </div>
-                        }
-                        {
-                            (modifyYear) &&
-                            <div className="flex mb-4 min-h-16 items-center w-9/12">
-                                <input
-                                    type="number"
-                                    id="year"
-                                    onChange={(e) => setYear(Number(e.target.value))}
-                                    className="bg-transparent border border-violet-300 p-2 w-full rounded text-white"
-                                    placeholder="Año..."
-                                />
-                                <button 
-                                    onClick={cancelYear}    
-                                    className='ml-3 bg-red-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-red-600'
-                                >
-                                    Cancelar
-                                </button>
-                            </div>
-                        }
-                        <div className='flex items-center w-9/12'>
-                            <label className="block text-white">Patente / Dominio</label>
-                        </div>
-                        {
-                            (!modifyPatente) &&
-                            <div className='flex w-9/12 mb-4 min-h-16 items-center justify-between'>
-                                <p className='bg-transparent border border-violet-300 rounded w-full mr-3 py-2 px-3 text-white'>
-                                    {vehicle.patente}
-                                </p>
-                                <button 
-                                    onClick={() => setModifyPatente(!modifyPatente)}
-                                    className='bg-pink-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-pink-600'
-                                >
-                                    Modificar
-                                </button>
-                            </div>
-                        }
-                        {
-                            (modifyPatente) &&
-                            <div className="flex mb-4 min-h-16 items-center w-9/12">
-                                <input
-                                    type="text"
-                                    id="model"
-                                    onChange={(e) => setPatente((e.target.value.toLocaleUpperCase()))}
-                                    className="bg-transparent border border-violet-300 p-2 w-full rounded text-white"
-                                    placeholder="Patente / Dominio..."
-                                />
-                                <button 
-                                    onClick={cancelPatente}    
-                                    className='ml-3 bg-red-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-red-600'
-                                >
-                                    Cancelar
-                                </button>
-                            </div>
-                        }
-                        <div className='flex items-center w-9/12'>
-                            <label className="block text-white">Combustible</label>
-                        </div>
-                        {
-                            (!modifyFuel) &&
-                            <div className='flex w-9/12 mb-4 min-h-16 items-center justify-between'>
-                                <p className='bg-transparent border border-violet-300 rounded w-full mr-3 py-2 px-3 text-white'>
-                                    {vehicle.fuel}
-                                </p>
-                                <button 
-                                    onClick={() => setModifyFuel(!modifyFuel)}
-                                    className='bg-pink-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-pink-600'
-                                >
-                                    Modificar
-                                </button>
-                            </div>
-                        }
-                        {
-                            (modifyFuel) &&
-                            <div className="flex mb-4 min-h-16 items-center w-9/12">
-                                <select
-                                    className="bg-transparent border border-violet-300 p-2 w-full rounded text-white cursor-pointer"
-                                    id="fuel"
-                                    value={fuel}
-                                    onChange={(e) => setFuel(e.target.value)}
-                                >
-                                    <option className='bg-violet-600' value="">-</option>
-                                    <option className='bg-violet-600' value="NAFTA">Nafta</option>
-                                    <option className='bg-violet-600' value="GASOIL">Gasoil</option>
-                                    <option className='bg-violet-600' value="HIBRIDO">Hibrido</option>
-                                    <option className='bg-violet-600' value="ELECTRICO">Electrico</option>
-                                    <option className='bg-violet-600' value="OTRO">Otro</option>
-                                </select>
-                                <button 
-                                    onClick={cancelFuel}    
-                                    className='ml-3 bg-red-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-red-600'
-                                >
-                                    Cancelar
-                                </button>
-                            </div>
-                        }
-                        <div className='flex items-center w-9/12'>
-                            <label className="block text-white">GNC</label>
-                        </div>
-                        {
-                            (!modifyGnc) &&
-                            <div className='flex w-9/12 mb-4 min-h-16 items-center justify-between'>
-                                {
-                                    (vehicle.gnc) &&
-                                    <p className='bg-transparent border border-violet-300 rounded w-full mr-3 py-2 px-3 text-white'>
-                                        SI
-                                    </p>
-                                }
-                                {
-                                    (!vehicle.gnc) &&
-                                    <p className='bg-transparent border border-violet-300 rounded w-full mr-3 py-2 px-3 text-white'>
-                                        NO
-                                    </p>
-                                }
-                                <button 
-                                    onClick={() => setModifyGnc(!modifyGnc)}
-                                    className='bg-pink-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-pink-600'
-                                >
-                                    Modificar
-                                </button>
-                            </div>
-                        }
-                        {
-                            (modifyGnc) &&
-                            <div className="flex mb-4 min-h-16 items-center w-9/12">
-                                <select
-                                    className="bg-transparent border border-violet-300 p-2 w-full rounded text-white cursor-pointer"
-                                    id="fuel"
-                                    value={gnc}
-                                    onChange={(e) => setGnc(e.target.value)}
-                                >
-                                    <option className='bg-violet-600' value="">-</option>
-                                    <option className='bg-violet-600' value="SI">SI</option>
-                                    <option className='bg-violet-600' value="NO">NO</option>
-                                </select>
-                                <button 
-                                    onClick={cancelGnc}    
-                                    className='ml-3 bg-red-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-red-600'
-                                >
-                                    Cancelar
-                                </button>
-                            </div>
-                        }
-                        <div className='flex items-center w-9/12'>
-                            <label className="block text-white">Compañia de seguro</label>
-                        </div>
-                        {
-                            (!modifyCompany) &&
-                            <div className='flex w-9/12 mb-4 min-h-16 items-center justify-between'>
-                                <p className='bg-transparent border border-violet-300 rounded w-full mr-3 py-2 px-3 text-white'>
-                                    {vehicle.seguro.aseguradora}
-                                </p>
-                                <button 
-                                    onClick={() => setModifyCompany(!modifyCompany)}
-                                    className='bg-pink-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-pink-600'
-                                >
-                                    Modificar
-                                </button>
-                            </div>
-                        }
-                        {
-                            (modifyCompany) &&
-                            <div className="flex mb-4 min-h-16 items-center w-9/12">
-                                <input
-                                    type="text"
-                                    id="company"
-                                    onChange={(e) => setCompany((e.target.value.toUpperCase()))}
-                                    className="bg-transparent border border-violet-300 p-2 w-full rounded text-white"
-                                    placeholder="Compañia..."
-                                />
-                                <button 
-                                    onClick={cancelCompany}    
-                                    className='ml-3 bg-red-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-red-600'
-                                >
-                                    Cancelar
-                                </button>
-                            </div>
-                        }
-                        <div className='flex items-center w-9/12'>
-                            <label className="block text-white">Cobertura</label>
-                        </div>
-                        {
-                            (!modifyCoverage) &&
-                            <div className='flex w-9/12 mb-4 min-h-16 items-center justify-between'>
-                                <p className='bg-transparent border border-violet-300 rounded w-full mr-3 py-2 px-3 text-white'>
-                                    {vehicle.seguro.cobertura}
-                                </p>
-                                <button 
-                                    onClick={() => setModifyCoverage(!modifyCoverage)}
-                                    className='bg-pink-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-pink-600'
-                                >
-                                    Modificar
-                                </button>
-                            </div>
-                        }
-                        {
-                            (modifyCoverage) &&
-                            <div className="flex mb-4 min-h-16 items-center w-9/12">
-                                <select
-                                    className="bg-transparent border border-violet-300 p-2 w-full rounded text-white"
-                                    id="coverage"
-                                    value={coverage}
-                                    onChange={(e) => setCoverage(e.target.value)}
-                                >
-                                    <option className='bg-violet-600' value="">-</option>
-                                    <option className='bg-violet-600' value="RESP. CIVIL">Resp. Civil</option>
-                                    <option className='bg-violet-600' value="TERCEROS COMPLETO">Terceros completo</option>
-                                    <option className='bg-violet-600' value="TERCEROS COMPLETO GRANIZO">Terceros completo con granizo</option>
-                                    <option className='bg-violet-600' value="TODO RIESGO">Todo Riesgo</option>
-                                </select>
-                                <button 
-                                    onClick={cancelCoverage}    
-                                    className='ml-3 bg-red-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-red-600'
-                                >
-                                    Cancelar
-                                </button>
-                            </div>
-                        }
-                        <div className='flex items-center w-9/12'>
-                            <label className="block text-white">Tipo de uso</label>
-                        </div>
-                        {
-                            (!modifyUse) &&
-                            <div className='flex w-9/12 mb-4 min-h-16 items-center justify-between'>
-                                <p className='bg-transparent border border-violet-300 rounded w-full mr-3 py-2 px-3 text-white'>
-                                    {vehicle.use}
-                                </p>
-                                <button 
-                                    onClick={() => setModifyUse(!modifyUse)}
-                                    className='bg-pink-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-pink-600'
-                                >
-                                    Modificar
-                                </button>
-                            </div>
-                        }
-                        {
-                            (modifyUse) &&
-                            <div className="flex mb-4 min-h-16 items-center w-9/12">
-                                <select
-                                    className="bg-transparent border border-violet-300 p-2 w-full rounded text-white"
-                                    id="use"
-                                    value={use}
-                                    onChange={(e) => setUse(e.target.value)}
-                                >
-                                    <option className='bg-violet-600' value="">-</option>
-                                    <option className='bg-violet-600' value="PARTICULAR">Particular</option>
-                                    <option className='bg-violet-600' value="COMERCIAL">Comercial</option>
-                                </select>
-                                <button 
-                                    onClick={cancelUse}    
+                                    onClick={cancelDescription}
                                     className='ml-3 bg-red-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-red-600'
                                 >
                                     Cancelar
@@ -588,7 +357,7 @@ export default function UpdateVehicle() {
                             (!modifyKm) &&
                             <div className='flex w-9/12 mb-4 min-h-16 items-center justify-between'>
                                 <p className='bg-transparent border border-violet-300 rounded w-full mr-3 py-2 px-3 text-white'>
-                                    {vehicle.km}
+                                    {activity.km}
                                 </p>
                                 <button 
                                     onClick={() => setModifyKm(!modifyKm)}
@@ -616,9 +385,237 @@ export default function UpdateVehicle() {
                                 </button>
                             </div>
                         }
+                        <div className='flex items-center w-9/12'>
+                            <label htmlFor="date" className="block mb-1 text-white">Fecha</label>
+                        </div>
+                        {
+                            (!modifyDate) &&
+                            <div className='flex w-9/12 mb-4 min-h-16 items-center justify-between'>
+                                <p className='bg-transparent border border-violet-300 rounded w-full mr-3 py-2 px-3 text-white'>
+                                    {new Date(activity.date).toLocaleDateString()}
+                                </p>
+                                <button 
+                                    onClick={() => setModifyDate(!modifyDate)}
+                                    className='bg-pink-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-pink-600'
+                                >
+                                    Modificar
+                                </button>
+                            </div>
+                        }
+                        {
+                            (modifyDate) &&
+                            <div className="flex mb-4 min-h-16 items-center w-9/12">
+                                <input
+                                    type="date"
+                                    id="date"
+                                    onChange={(e) => setDate(e.target.value)}
+                                    className="bg-transparent border border-violet-300 p-2 w-full rounded text-white"
+                                />
+                                <button 
+                                    onClick={cancelDate}    
+                                    className='ml-3 bg-red-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-red-600'
+                                >
+                                    Cancelar
+                                </button>
+                            </div>
+                        }
+                        <div className='flex items-center w-9/12'>
+                            <label className="block text-white">¿Tiene próxima fecha de realización?</label>
+                        </div>
+                        {
+                            (!modifyIsNextDate) &&
+                            <div className='flex w-9/12 mb-4 min-h-16 items-center justify-between'>
+                                <p className='bg-transparent border border-violet-300 rounded w-full mr-3 py-2 px-3 text-white'>
+                                    {activity.nextDate.tiene ? "Sí" : "No"}
+                                </p>
+                                <button 
+                                    onClick={cambiarIsNextDate}
+                                    className='bg-pink-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-pink-600'
+                                >
+                                    Modificar
+                                </button>
+                            </div>
+                        }
+                        {
+                            (modifyIsNextDate) &&
+                            <div className="flex w-9/12 mb-4 min-h-16 items-center justify-between">
+                                <p className='bg-transparent border border-violet-300 rounded w-full mr-3 py-2 px-3 text-white'>
+                                    {isNextDate ? "Sí" : "No"}
+                                </p>
+                                <button 
+                                    onClick={cancelIsNextDate}    
+                                    className='ml-3 bg-red-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-red-600'
+                                >
+                                    Cancelar
+                                </button>
+                            </div>
+                        }
+                        {
+                            (changeStateNextDate) &&
+                            <div className='flex items-center w-9/12'>
+                                <label className="block text-white">¿Cuándo?</label>
+                            </div>
+                        }
+                        {
+                            (!modifyNextDate && changeStateNextDate) &&
+                            <div className='flex w-9/12 mb-4 min-h-16 items-center justify-between'>
+                                <p className='bg-transparent border border-violet-300 rounded w-full mr-3 py-2 px-3 text-white'>
+                                    {new Date(activity.nextDate.date).toLocaleDateString()}
+                                </p>
+                                <button 
+                                    onClick={() => setModifyNextDate(!modifyNextDate)}
+                                    className='bg-pink-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-pink-600'
+                                >
+                                    Modificar
+                                </button>
+                            </div>
+                        }
+                        {
+                            (modifyNextDate && changeStateNextDate) &&
+                            <div className="flex mb-4 min-h-16 items-center w-9/12">
+                                <input
+                                    type='date'
+                                    className="bg-transparent border border-violet-300 p-2 w-full rounded text-white cursor-pointer"
+                                    id="nextDate"
+                                    onChange={(e) => setNextDate(e.target.value)}
+                                />
+                                <button 
+                                    onClick={cancelNextDate}    
+                                    className='ml-3 bg-red-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-red-600'
+                                >
+                                    Cancelar
+                                </button>
+                            </div>
+                        }
+                        <div className='flex items-center w-9/12'>
+                            <label className="block text-white">Hay prox km</label>
+                        </div>
+                        {
+                            (!modifyIsNextKm && activity.nextKm.tiene) &&
+                            <div className='flex w-9/12 mb-4 min-h-16 items-center justify-between'>
+                                <p className='bg-transparent border border-violet-300 rounded w-full mr-3 py-2 px-3 text-white'>
+                                   {activity.nextKm.tiene}
+                                </p>
+                                <button 
+                                    onClick={() => setModifyIsNextKm(!modifyIsNextKm)}
+                                    className='bg-pink-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-pink-600'
+                                >
+                                    Modificar
+                                </button>
+                            </div>
+                        }
+                        {
+                            (modifyIsNextKm) &&
+                            <div className="flex mb-4 min-h-16 items-center w-9/12">
+                                <input
+                                    type='text'
+                                    className="bg-transparent border border-violet-300 p-2 w-full rounded text-white cursor-pointer"
+                                    id="isNextKm"
+                                    onChange={(e) => setIsNextKm(!isNextKm)}
+                                />
+                                <button 
+                                    onClick={cancelIsNextKm}    
+                                    className='ml-3 bg-red-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-red-600'
+                                >
+                                    Cancelar
+                                </button>
+                            </div>
+                        }
+                        <div className='flex items-center w-9/12'>
+                            <label htmlFor="nextKm" className="block text-white">Proximo KM</label>
+                        </div>
+                        {
+                            (!modifyNextKm && activity.nextKm.tiene) &&
+                            <div className='flex w-9/12 mb-4 min-h-16 items-center justify-between'>
+                                <p className='bg-transparent border border-violet-300 rounded w-full mr-3 py-2 px-3 text-white'>
+                                    {activity.nextKm.km}
+                                </p>
+                                <button 
+                                    onClick={() => setModifyNextKm(!modifyNextKm)}
+                                    className='bg-pink-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-pink-600'
+                                >
+                                    Modificar
+                                </button>
+                            </div>
+                        }
+                        {
+                            (modifyNextKm) &&
+                            <div className="flex mb-4 min-h-16 items-center w-9/12">
+                                <input
+                                    type="number"
+                                    id="nextKm"
+                                    onChange={(e) => setNextKm(Number(e.target.value))}
+                                    className="bg-transparent border border-violet-300 p-2 w-full rounded text-white"
+                                    placeholder="Ej 63000..."
+                                />
+                                <button 
+                                    onClick={cancelNextKm}    
+                                    className='ml-3 bg-red-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-red-600'
+                                >
+                                    Cancelar
+                                </button>
+                            </div>
+                        }
+                        {
+                            (userPremium) &&
+                            <div className='flex items-center w-9/12'>
+                                <label className="block text-white">
+                                    Imagen
+                                    <p className='ml-2 text-white'>{selectedFileName}</p>
+                                </label>
+                            </div>
+                        }
+                        {
+                            (!modifySelectedFile && userPremium) &&
+                            <div className='flex w-9/12 mb-4 min-h-16 items-center justify-between'>
+                                {
+                                    (activity.image.url !== "") &&
+                                    <p className='bg-transparent border border-violet-300 rounded w-full mr-3 py-2 px-3 text-white'>
+                                        {activity.image.url}
+                                    </p>
+                                }
+                                {
+                                    (activity.image.url === "") &&
+                                    <p className='bg-transparent border border-violet-300 rounded w-full mr-3 py-2 px-3 text-white'>
+                                        Sin imagen
+                                    </p>
+                                }
+                                <button 
+                                    onClick={() => setModifySelectedFile(!modifySelectedFile)}
+                                    className='bg-pink-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-pink-600'
+                                >
+                                    Modificar
+                                </button>
+                            </div>
+                        }
+                        {
+                            (modifySelectedFile && userPremium) &&
+                            <div className="flex mb-4 min-h-16 items-center w-9/12">
+                                <div className="flex items-center justify-left space-x-4 mb-4">
+                                    <label
+                                        htmlFor="fileInput"
+                                        className="cursor-pointer bg-pink-800 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded"
+                                    >
+                                        {changeFile || 'Seleccionar Imagen'}
+                                    </label>
+                                    <input type="file" 
+                                        accept="image/*" 
+                                        onChange={handleFileChange} 
+                                        id="fileInput" 
+                                        className="hidden"
+                                    />
+                                </div>
+                                <button 
+                                    onClick={cancelSelectedFile}    
+                                    className='ml-3 bg-red-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-red-600'
+                                >
+                                    Cancelar
+                                </button>
+                            </div>
+                        }
                         <button 
                             className="bg-violet-800 text-white py-2 px-4 w-9/12 rounded hover:cursor-pointer hover:bg-violet-700" 
-                            onClick={updateVehicle}
+                            onClick={updateActivity}
                             >
                             Guardar
                         </button>

@@ -5,6 +5,7 @@ import axios from '@/app/utils/axios';
 import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link';
 import Loader from '@/components/loader';
+import DeleteActivityPopUp from "@/components/deleteActivityPopUp";
 
 export default function Activities() {
     
@@ -28,6 +29,15 @@ export default function Activities() {
 
     //Hook para loader
     const [loader, setLoader] = useState(true);
+
+    //Hook para popUp
+    const [showPopUp, setShowPopUp] = useState(false)
+    const modifyShowPopUp = (indicador) => {
+        setShowPopUp(false);
+        if (indicador === "Reload") {
+            window.location.reload()
+        }
+    }
 
     //Hooks para msj
     const [mensaje, setMensaje] = useState("");
@@ -157,21 +167,20 @@ export default function Activities() {
                                         <Link href={`/activities/update/${activity._id}`} className=' bg-pink-700 text-white cursor-pointer p-2 rounded hover:bg-pink-600'>
                                             Modificar Datos
                                         </Link>
-                                        <button className=' bg-pink-700 text-white cursor-pointer p-2 rounded hover:bg-pink-600'>
+                                        <button onClick={() => setShowPopUp(true)} className=' bg-pink-700 text-white cursor-pointer p-2 rounded hover:bg-pink-600'>
                                             Eliminar Actividad
                                         </button>
                                     </div>
-                                    {/*
+                                    {
                                         (!loader && showPopUp) &&
-                                        <DeleteVehiclePopUp 
-                                            vehicleId={vehicle._id}
-                                            brand={vehicle.brand}
-                                            model={vehicle.model}
-                                            patente={vehicle.patente}
+                                        <DeleteActivityPopUp 
+                                            activityId={activity._id}
+                                            type={activity.type}
+                                            description={activity.description}
                                             modifyShowPopUp={modifyShowPopUp}
                                             token={token}
                                         />
-                                    */}
+                                    }
                                 </div>
                             ))}
                             </div>
