@@ -27,7 +27,7 @@ export default function Navbar() {
               Mis Vehículos
             </Link>
             <span className="mx-3 text-white">|</span>
-            <Link href="#" className="text-white hover:underline">
+            <Link href="/user/data" className="text-white hover:underline">
               <i className="bi bi-person-fill mx-1"/>
               Mis Datos
             </Link>

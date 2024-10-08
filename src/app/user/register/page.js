@@ -255,19 +255,19 @@ export default function Register() {
                             className="bg-transparent border border-violet-300 p-2 w-full rounded text-white"
                             placeholder="Repetir contraseña..."
                         />
-                        </div>
-                        <div className="flex items-center justify-center space-x-2">
-                            <input
+                    </div>
+                    <div className="flex items-center justify-center space-x-2">
+                        <input
                             type="checkbox"
                             id="terms"
                             className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
                             checked={acceptedTerms}
                             onChange={() => setAcceptedTerms(!acceptedTerms)}
-                            />
-                            <label htmlFor="terms" className="text-white">
-                                Acepto los <a href="/terms" className="text-violet-300 underline ">términos y condiciones</a>
-                            </label>
-                        </div>
+                        />
+                        <label htmlFor="terms" className="text-white">
+                            Acepto los <a href="/terms" className="text-violet-300 underline ">términos y condiciones</a>
+                        </label>
+                    </div>
                     </div>
                     <button 
                         className="bg-violet-800 text-white py-2 px-4 w-full rounded hover:cursor-pointer hover:bg-violet-700" 

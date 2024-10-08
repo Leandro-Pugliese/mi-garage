@@ -217,7 +217,7 @@ export default function UpdateActivity() {
             return
         }
         const onlyNumbers = /^\d+$/; //Verifico que el value de km solo contenga numeros.
-        if (km && !onlyNumbers.test(km)) {
+        if (!km && !onlyNumbers.test(km) || !km && km < 0) {
             setMensaje("Kilometraje inválido.")
             setShowMsj(false);
             setShowErrorMsj(true);
