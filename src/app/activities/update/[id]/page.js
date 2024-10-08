@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
 import axios from '@/app/utils/axios';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation'
 import { useParams } from 'next/navigation';
 import Loader from '@/components/loader';
@@ -54,7 +55,6 @@ export default function UpdateActivity() {
             const response = await axios(config);
             setUserPremium(response.data.premium);
             setUserCategories(response.data.categories);
-            setLoader(false);
         } catch (error) {
             setMensaje("Error");
             setShowMsj(false);
@@ -72,7 +72,6 @@ export default function UpdateActivity() {
 
     const getActivity = async () => {
         try {
-            setLoader(true)
             const config = {
                 method: "get",
                 url: `/activity/data/${id}`,
@@ -83,7 +82,9 @@ export default function UpdateActivity() {
             };
             const response = await axios(config);
             setActivity(response.data);
-            setChangeStateNextDate(response.data.nextDate.tiene)
+            setChangeStateNextDate(response.data.nextDate.tiene);
+            setChangeStateNextKm(response.data.nextKm.tiene);
+            setActive(response.data.active);
             setShowMsj(false);
             setShowErrorMsj(false);
             setLoader(false);
@@ -113,6 +114,7 @@ export default function UpdateActivity() {
     const [isNextKm, setIsNextKm] = useState(null);
     const [nextKm, setNextKm] = useState(null);
     const [deleteImage, setDeleteImage] = useState(false);
+    const [active, setActive] = useState(null);
     //Hooks para subir imagen y boton cargar imagen
     const [selectedFile, setSelectedFile] = useState(null);
     const [changeFile, setChangeFile] = useState('');
@@ -122,9 +124,15 @@ export default function UpdateActivity() {
         setSelectedFile(file);
         if (file) {
             setChangeFile("Cambiar Imagen")
-            setSelectedFileName(file.name);
+            setSelectedFileName(`(${file.name})`);
         }
     };
+    //Hooks para eliminar imagen
+    const [showImageField, setShowImageField] = useState(true);
+    const deletingImage = () => {
+        setDeleteImage(!deleteImage);
+        setShowImageField(!showImageField);
+    }
 
     //Hooks para renderizar info o input para modificar info.
     const [modifyType, setModifyType] = useState(false);
@@ -134,9 +142,11 @@ export default function UpdateActivity() {
     const [modifyIsNextDate, setModifyIsNextDate] = useState(false);
     const [modifyNextDate, setModifyNextDate] = useState(false);
     const [changeStateNextDate, setChangeStateNextDate] = useState(false);
+    const [changeStateNextKm, setChangeStateNextKm] = useState(false);
     const [modifyNextKm, setModifyNextKm] = useState(false);
     const [modifyIsNextKm, setModifyIsNextKm] = useState(false);
     const [modifySelectedFile, setModifySelectedFile] = useState(false);
+    const [modifyActive, setModifyActive] = useState(false);
     
     const cancelType = () => {
         setType(undefined);
@@ -161,6 +171,7 @@ export default function UpdateActivity() {
     }
     const cancelIsNextDate = () => {
         setIsNextDate(null);
+        setNextDate(null);
         setModifyIsNextDate(false);
         setChangeStateNextDate(!changeStateNextDate);
     }
@@ -168,9 +179,16 @@ export default function UpdateActivity() {
         setNextDate(null);
         setModifyNextDate(false);
     }
+    const cambiarIsNextKm = () => {
+        setIsNextKm(!activity.nextKm.tiene);
+        setModifyIsNextKm(true);
+        setChangeStateNextKm(!changeStateNextKm);
+    }
     const cancelIsNextKm = () => {
         setIsNextKm(null);
+        setNextKm(null);
         setModifyIsNextKm(false);
+        setChangeStateNextKm(!changeStateNextKm)
     }
     const cancelNextKm = () => {
         setNextKm(null);
@@ -179,13 +197,41 @@ export default function UpdateActivity() {
     const cancelSelectedFile = () => {
         setSelectedFile(null);
         setModifySelectedFile(false);
+        setChangeFile('');
+        setSelectedFileName('');
     }
-
+    const changeActive = () => {
+        setActive(!activity.active);
+        setModifyActive(true);
+    }
+    const cancelActive = () => {
+        setActive(activity.active);
+        setModifyActive(false);
+    }
+    
     const updateActivity = async () => {
+        if (isNextDate && !nextDate) {
+            setMensaje("Próxima fecha de realización inválida.")
+            setShowMsj(false);
+            setShowErrorMsj(true);
+            return
+        }
+        const onlyNumbers = /^\d+$/; //Verifico que el value de km solo contenga numeros.
+        if (km && !onlyNumbers.test(km)) {
+            setMensaje("Kilometraje inválido.")
+            setShowMsj(false);
+            setShowErrorMsj(true);
+            return
+        }
+        if (isNextKm && !nextKm || isNextKm && nextKm <= 0 || isNextKm && !onlyNumbers.test(nextKm)) {
+            setMensaje("Próximo kilometraje inválido.")
+            setShowMsj(false);
+            setShowErrorMsj(true);
+            return
+        }
         try {
             setLoader(true)
             if (userPremium) {
-                // Armo un objeto FormData para poder enviar imagen si hay
                 const formData = new FormData();
                 formData.append('imagen', selectedFile);
                 formData.append('type', type);
@@ -197,6 +243,7 @@ export default function UpdateActivity() {
                 formData.append('isNextKm', isNextKm);
                 formData.append('nextKm', nextKm);
                 formData.append('deleteImage', deleteImage);
+                formData.append('active', active);
                 const config = {
                     method: "put",
                     url: `/activity/update-premium/${id}`,
@@ -214,7 +261,7 @@ export default function UpdateActivity() {
             } else if (!userPremium) {
                 const config = {
                     method: "put",
-                    url: `/activity/update-premium/${id}`,
+                    url: `/activity/update/${id}`,
                     data: {type, description, km, date, isNextDate, nextDate, isNextKm, nextKm, active, deleteImage},
                     headers: {
                       "Content-Type": "application/json",
@@ -283,7 +330,7 @@ export default function UpdateActivity() {
                                 </p>
                                 <button 
                                     onClick={() => setModifyType(!modifyType)}
-                                    className='bg-pink-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-pink-600'
+                                    className='bg-pink-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-pink-600 min-w-[25%]'
                                 >
                                     Modificar
                                 </button>
@@ -309,7 +356,7 @@ export default function UpdateActivity() {
                                 </select>
                                 <button 
                                     onClick={cancelType}
-                                    className='ml-3 bg-red-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-red-600'
+                                    className='ml-3 bg-red-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-red-600 min-w-[25%]'
                                 >
                                     Cancelar
                                 </button>
@@ -326,7 +373,7 @@ export default function UpdateActivity() {
                                 </p>
                                 <button 
                                     onClick={() => setModifyDescription(!modifyDescription)}
-                                    className='bg-pink-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-pink-600'
+                                    className='bg-pink-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-pink-600 min-w-[25%]'
                                 >
                                     Modificar
                                 </button>
@@ -340,11 +387,11 @@ export default function UpdateActivity() {
                                     id="desc"
                                     onChange={(e) => setDescription(e.target.value.toUpperCase())}
                                     className="bg-transparent border border-violet-300 p-2 w-full rounded text-white"
-                                    placeholder="Descripción..."
+                                    placeholder="Nueva descripción..."
                                 />
                                 <button 
                                     onClick={cancelDescription}
-                                    className='ml-3 bg-red-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-red-600'
+                                    className='ml-3 bg-red-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-red-600 min-w-[25%]'
                                 >
                                     Cancelar
                                 </button>
@@ -361,7 +408,7 @@ export default function UpdateActivity() {
                                 </p>
                                 <button 
                                     onClick={() => setModifyKm(!modifyKm)}
-                                    className='bg-pink-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-pink-600'
+                                    className='bg-pink-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-pink-600 min-w-[25%]'
                                 >
                                     Modificar
                                 </button>
@@ -375,11 +422,11 @@ export default function UpdateActivity() {
                                     id="km"
                                     onChange={(e) => setKm(Number(e.target.value))}
                                     className="bg-transparent border border-violet-300 p-2 w-full rounded text-white"
-                                    placeholder="Kilometraje..."
+                                    placeholder="Ej 63000 (sin comas ni puntos)..."
                                 />
                                 <button 
                                     onClick={cancelKm}    
-                                    className='ml-3 bg-red-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-red-600'
+                                    className='ml-3 bg-red-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-red-600 min-w-[25%]'
                                 >
                                     Cancelar
                                 </button>
@@ -396,7 +443,7 @@ export default function UpdateActivity() {
                                 </p>
                                 <button 
                                     onClick={() => setModifyDate(!modifyDate)}
-                                    className='bg-pink-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-pink-600'
+                                    className='bg-pink-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-pink-600 min-w-[25%]'
                                 >
                                     Modificar
                                 </button>
@@ -413,7 +460,7 @@ export default function UpdateActivity() {
                                 />
                                 <button 
                                     onClick={cancelDate}    
-                                    className='ml-3 bg-red-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-red-600'
+                                    className='ml-3 bg-red-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-red-600 min-w-[25%]'
                                 >
                                     Cancelar
                                 </button>
@@ -430,7 +477,7 @@ export default function UpdateActivity() {
                                 </p>
                                 <button 
                                     onClick={cambiarIsNextDate}
-                                    className='bg-pink-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-pink-600'
+                                    className='bg-pink-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-pink-600 min-w-[25%]'
                                 >
                                     Modificar
                                 </button>
@@ -444,7 +491,7 @@ export default function UpdateActivity() {
                                 </p>
                                 <button 
                                     onClick={cancelIsNextDate}    
-                                    className='ml-3 bg-red-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-red-600'
+                                    className='bg-red-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-red-600 min-w-[25%]'
                                 >
                                     Cancelar
                                 </button>
@@ -460,13 +507,13 @@ export default function UpdateActivity() {
                             (!modifyNextDate && changeStateNextDate) &&
                             <div className='flex w-9/12 mb-4 min-h-16 items-center justify-between'>
                                 <p className='bg-transparent border border-violet-300 rounded w-full mr-3 py-2 px-3 text-white'>
-                                    {new Date(activity.nextDate.date).toLocaleDateString()}
+                                    {activity.nextDate.tiene ? new Date(activity.nextDate.date).toLocaleDateString() : "Agregar fecha"}
                                 </p>
                                 <button 
                                     onClick={() => setModifyNextDate(!modifyNextDate)}
-                                    className='bg-pink-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-pink-600'
+                                    className='bg-pink-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-pink-600 min-w-[25%]'
                                 >
-                                    Modificar
+                                    {activity.nextDate.tiene ? "Modificar" : "Agregar"}
                                 </button>
                             </div>
                         }
@@ -481,24 +528,24 @@ export default function UpdateActivity() {
                                 />
                                 <button 
                                     onClick={cancelNextDate}    
-                                    className='ml-3 bg-red-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-red-600'
+                                    className='ml-3 bg-red-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-red-600 min-w-[25%]'
                                 >
                                     Cancelar
                                 </button>
                             </div>
                         }
                         <div className='flex items-center w-9/12'>
-                            <label className="block text-white">Hay prox km</label>
+                            <label className="block text-white">¿Tiene próximo kilometraje de realización?</label>
                         </div>
                         {
-                            (!modifyIsNextKm && activity.nextKm.tiene) &&
+                            (!modifyIsNextKm) &&
                             <div className='flex w-9/12 mb-4 min-h-16 items-center justify-between'>
                                 <p className='bg-transparent border border-violet-300 rounded w-full mr-3 py-2 px-3 text-white'>
-                                   {activity.nextKm.tiene}
+                                    {activity.nextKm.tiene ? "Sí" : "No"}
                                 </p>
                                 <button 
-                                    onClick={() => setModifyIsNextKm(!modifyIsNextKm)}
-                                    className='bg-pink-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-pink-600'
+                                    onClick={cambiarIsNextKm}
+                                    className='bg-pink-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-pink-600 min-w-[25%]'
                                 >
                                     Modificar
                                 </button>
@@ -506,40 +553,40 @@ export default function UpdateActivity() {
                         }
                         {
                             (modifyIsNextKm) &&
-                            <div className="flex mb-4 min-h-16 items-center w-9/12">
-                                <input
-                                    type='text'
-                                    className="bg-transparent border border-violet-300 p-2 w-full rounded text-white cursor-pointer"
-                                    id="isNextKm"
-                                    onChange={(e) => setIsNextKm(!isNextKm)}
-                                />
+                            <div className="flex w-9/12 mb-4 min-h-16 items-center justify-between">
+                                <p className='bg-transparent border border-violet-300 rounded w-full mr-3 py-2 px-3 text-white'>
+                                    {isNextKm ? "Sí" : "No"}
+                                </p>
                                 <button 
                                     onClick={cancelIsNextKm}    
-                                    className='ml-3 bg-red-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-red-600'
+                                    className='bg-red-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-red-600 min-w-[25%]'
                                 >
                                     Cancelar
                                 </button>
                             </div>
                         }
-                        <div className='flex items-center w-9/12'>
-                            <label htmlFor="nextKm" className="block text-white">Proximo KM</label>
-                        </div>
                         {
-                            (!modifyNextKm && activity.nextKm.tiene) &&
+                            (changeStateNextKm) &&
+                            <div className='flex items-center w-9/12'>
+                                <label htmlFor="nextKm" className="block text-white">Próximo kilometraje</label>
+                            </div>
+                        }
+                        {
+                            (!modifyNextKm && changeStateNextKm) &&
                             <div className='flex w-9/12 mb-4 min-h-16 items-center justify-between'>
                                 <p className='bg-transparent border border-violet-300 rounded w-full mr-3 py-2 px-3 text-white'>
-                                    {activity.nextKm.km}
+                                    {activity.nextKm.tiene ? activity.nextKm.km : "Agregar kilometraje"}
                                 </p>
                                 <button 
                                     onClick={() => setModifyNextKm(!modifyNextKm)}
-                                    className='bg-pink-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-pink-600'
+                                    className='bg-pink-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-pink-600 min-w-[25%]'
                                 >
-                                    Modificar
+                                    {activity.nextKm.tiene ? "Modificar" : "Agregar"}
                                 </button>
                             </div>
                         }
                         {
-                            (modifyNextKm) &&
+                            (modifyNextKm && changeStateNextKm) &&
                             <div className="flex mb-4 min-h-16 items-center w-9/12">
                                 <input
                                     type="number"
@@ -550,29 +597,36 @@ export default function UpdateActivity() {
                                 />
                                 <button 
                                     onClick={cancelNextKm}    
-                                    className='ml-3 bg-red-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-red-600'
+                                    className='ml-3 bg-red-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-red-600 min-w-[25%]'
                                 >
                                     Cancelar
                                 </button>
                             </div>
                         }
                         {
-                            (userPremium) &&
+                            (userPremium && showImageField) &&
                             <div className='flex items-center w-9/12'>
-                                <label className="block text-white">
+                                <label className="flex text-white">
                                     Imagen
                                     <p className='ml-2 text-white'>{selectedFileName}</p>
                                 </label>
                             </div>
                         }
                         {
-                            (!modifySelectedFile && userPremium) &&
+                            (!modifySelectedFile && userPremium && showImageField) &&
                             <div className='flex w-9/12 mb-4 min-h-16 items-center justify-between'>
                                 {
                                     (activity.image.url !== "") &&
-                                    <p className='bg-transparent border border-violet-300 rounded w-full mr-3 py-2 px-3 text-white'>
-                                        {activity.image.url}
-                                    </p>
+                                    
+                                    <Link
+                                        href={activity.image.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="w-full text-center cursor-pointer bg-rose-600 hover:bg-rose-500 text-white font-bold py-2 px-4 mr-3 rounded"
+                                    >
+                                        Ver imagen
+                                     </Link>
+                                    
                                 }
                                 {
                                     (activity.image.url === "") &&
@@ -582,19 +636,19 @@ export default function UpdateActivity() {
                                 }
                                 <button 
                                     onClick={() => setModifySelectedFile(!modifySelectedFile)}
-                                    className='bg-pink-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-pink-600'
+                                    className='bg-pink-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-pink-600 min-w-[25%]'
                                 >
-                                    Modificar
+                                    {activity.image.url !== "" ? "Modificar" : "Agregar"}
                                 </button>
                             </div>
                         }
                         {
-                            (modifySelectedFile && userPremium) &&
+                            (modifySelectedFile && userPremium && showImageField) &&
                             <div className="flex mb-4 min-h-16 items-center w-9/12">
-                                <div className="flex items-center justify-left space-x-4 mb-4">
+                                <div className="flex items-center justify-left w-9/12 space-x-4">
                                     <label
                                         htmlFor="fileInput"
-                                        className="cursor-pointer bg-pink-800 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded"
+                                        className="w-full text-center cursor-pointer bg-pink-800 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded"
                                     >
                                         {changeFile || 'Seleccionar Imagen'}
                                     </label>
@@ -607,7 +661,53 @@ export default function UpdateActivity() {
                                 </div>
                                 <button 
                                     onClick={cancelSelectedFile}    
-                                    className='ml-3 bg-red-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-red-600'
+                                    className='ml-3 bg-red-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-red-600 min-w-[25%]'
+                                >
+                                    Cancelar
+                                </button>
+                            </div>
+                        }
+                        {
+                            (activity.image.url !== "") &&
+                            <div className="flex w-9/12 items-center justify-left space-x-2 mb-4">
+                                <input
+                                    type="checkbox"
+                                    id="terms"
+                                    className="cursor-pointer w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                                    checked={deleteImage}
+                                    onChange={deletingImage}
+                                />
+                                <label htmlFor="terms" className="text-white">
+                                    ¿Eliminar imagen? (No puedes recupearla luego)
+                                </label>
+                            </div>
+                        }
+                        <div className='flex items-center w-9/12'>
+                            <label className="block text-white">Activa</label>
+                        </div>
+                        {
+                            (!modifyActive) &&
+                            <div className='flex w-9/12 mb-4 min-h-16 items-center justify-between'>
+                                <p className='bg-transparent border border-violet-300 rounded w-full mr-3 py-2 px-3 text-white'>
+                                    {activity.active ? "Sí" : "No"}
+                                </p>
+                                <button 
+                                    onClick={changeActive}
+                                    className='bg-pink-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-pink-600 min-w-[25%]'
+                                >
+                                    Modificar
+                                </button>
+                            </div>
+                        }
+                        {
+                            (modifyActive) &&
+                            <div className="flex w-9/12 mb-4 min-h-16 items-center justify-between">
+                                <p className='bg-transparent border border-violet-300 rounded w-full mr-3 py-2 px-3 text-white'>
+                                    {active ? "Sí" : "No"}
+                                </p>
+                                <button 
+                                    onClick={cancelActive}    
+                                    className='bg-red-700 text-white cursor-pointer py-2 px-4 rounded hover:bg-red-600 min-w-[25%]'
                                 >
                                     Cancelar
                                 </button>

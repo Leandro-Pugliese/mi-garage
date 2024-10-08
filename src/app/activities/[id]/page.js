@@ -52,7 +52,6 @@ export default function Activities() {
     
     const getActivities = async () => {
         try {
-            setLoader(true)
             const config = {
                 method: "get",
                 url: `/activity/list/${id}`,
@@ -93,7 +92,6 @@ export default function Activities() {
             setVehicle(response.data)
             setShowMsj(false);
             setShowErrorMsj(false);
-            setLoader(false)
         } catch (error) {
             setMensaje("ERROR");
             setShowMsj(false);
