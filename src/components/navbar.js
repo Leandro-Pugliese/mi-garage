@@ -29,7 +29,7 @@ export default function Navbar() {
             <span className="mx-3 text-white">|</span>
             <Link href="/user/data" className="text-white hover:underline">
               <i className="bi bi-person-fill mx-1"/>
-              Mis Datos
+              Mi Cuenta
             </Link>
             <span className="mx-3 text-white">|</span>
             <Link href="#" className="text-white hover:underline">

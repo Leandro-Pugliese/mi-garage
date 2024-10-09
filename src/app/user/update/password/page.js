@@ -59,6 +59,12 @@ export default function ChangePassword() {
                 setShowErrorMsj(true);
                 return
             }
+            if (newPassword.length <= 7) {
+                setMensaje("La nueva contraseña debe tener al menos 8 caracteres.");
+                setShowMsj(false);
+                setShowErrorMsj(true);
+                return
+            }
             setLoader(true)
             const config = {
                 method: "put",
@@ -75,7 +81,7 @@ export default function ChangePassword() {
             setShowErrorMsj(false);
             setLoader(false);
         } catch (error) {
-            setMensaje("Error al modificar la contraseña");
+            setMensaje(error.response.data);
             setShowMsj(false);
             setShowErrorMsj(true);
             console.error('Error al modificar la contraseña:', error.response.data);
