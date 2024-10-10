@@ -173,23 +173,21 @@ export default function Register() {
                     </div>
                     {
                         (!showOtherFields) &&
-                        <>
-                            <div className="mb-4">
-                                <label htmlFor="provincia" className="block mb-1 text-white">Provincia / Estado</label>
-                                <select 
-                                    className="bg-transparent border border-violet-300 p-2 w-full rounded text-white" 
-                                    id="provincia" 
-                                    value={selectedProvince}
-                                    onChange={(e) => setSelectedProvince(e.target.value)}
-                                    disabled={!selectedCountry}
-                                >
-                                    <option className='bg-violet-600' value="">-</option>
-                                    {provinces.map((province) => (
-                                        <option className='bg-violet-600' key={province} value={province}>{province}</option>
-                                    ))}
-                                </select>
-                            </div>
-                        </>
+                        <div className="mb-4">
+                            <label htmlFor="provincia" className="block mb-1 text-white">Provincia / Estado</label>
+                            <select 
+                                className="bg-transparent border border-violet-300 p-2 w-full rounded text-white" 
+                                id="provincia" 
+                                value={selectedProvince}
+                                onChange={(e) => setSelectedProvince(e.target.value)}
+                                disabled={!selectedCountry}
+                            >
+                                <option className='bg-violet-600' value="">-</option>
+                                {provinces.map((province) => (
+                                    <option className='bg-violet-600' key={province} value={province}>{province}</option>
+                                ))}
+                            </select>
+                        </div>
                     }
                     {
                         (showOtherFields) &&
@@ -223,7 +221,7 @@ export default function Register() {
                             id="phone" 
                             onChange={(e) => setPhone(Number(e.target.value))}
                             className="bg-transparent border border-violet-300 p-2 w-full rounded text-white" 
-                            placeholder="Ej: 54 9 1130443344 (sin el +)" 
+                            placeholder="Ej: 5491130443355 (sin el +)" 
                         />
                     </div>
                     <div className="mb-4">

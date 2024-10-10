@@ -71,7 +71,7 @@ export default function UpdateCategories() {
             setMensaje(error.response.data);
             setShowMsj(false);
             setShowErrorMsj(true);
-            console.error('Error al modificar la contraseña:', error.response.data);
+            console.error('Error al modificar las categorías:', error.response.data);
             setLoader(false)
         }
     }
@@ -100,8 +100,8 @@ export default function UpdateCategories() {
             setSeverity("fail");
             setMessage(error.response.data);
             setShowMsj(false);
-            setShowErrorMsj(true);
-            console.error('Error al modificar la contraseña:', error.response.data);
+            setShowErrorMsj(false);
+            console.error('Error al modificar las categorías:', error.response.data);
             setLoader(false)
         }
     }

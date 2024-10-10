@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link';
 import Loader from '@/components/loader';
 import Message from '@/components/message';
+import DeleteUserPopUp from '@/components/deleteUserPopUp';
 
 export default function UserData() {
 
@@ -66,6 +67,15 @@ export default function UserData() {
         }
     }, [token]);
 
+    //Hook para popUp de eliminar cuenta.
+    const [showPopUp, setShowPopUp] = useState(false)
+    const modifyShowPopUp = (indicador) => {
+        setShowPopUp(false);
+        if (indicador === "Reload") {
+            window.location.reload()
+        }
+    }
+
     return (
         <div className="container min-h-screen mx-auto px-4 py-6 bg-gray-800">
             {
@@ -87,7 +97,7 @@ export default function UserData() {
                             <p className="text-white"><strong>Provincia: </strong>{user.province}</p>
                             <p className="text-white mb-3"><strong>Teléfono: </strong>{user.phone}</p>
                             <div className='flex w-full justify-between mb-4'>
-                                <Link href={`/user/update/${user._id}`} className='text-center bg-pink-700 text-white cursor-pointer p-2 rounded hover:bg-pink-600 min-w-[48%]'>
+                                <Link href='/user/update' className='text-center bg-pink-700 text-white cursor-pointer p-2 rounded hover:bg-pink-600 min-w-[48%]'>
                                     Modificar Datos
                                 </Link>
                                 <button onClick={() => setShowPopUp(true)} className='text-center bg-pink-700 text-white cursor-pointer p-2 rounded hover:bg-pink-600 min-w-[48%]'>
@@ -95,10 +105,10 @@ export default function UserData() {
                                 </button>
                             </div>
                             <div className='flex w-full justify-between'>
-                                <Link href={`/user/update/password`} className='text-center bg-pink-700 text-white cursor-pointer p-2 rounded hover:bg-pink-600 min-w-[48%]'>
+                                <Link href='/user/update/password' className='text-center bg-pink-700 text-white cursor-pointer p-2 rounded hover:bg-pink-600 min-w-[48%]'>
                                     Modificar Contraseña
                                 </Link>
-                                <Link href={`/user/update/categories`} className='text-center bg-pink-700 text-white cursor-pointer p-2 rounded hover:bg-pink-600 min-w-[48%]'>
+                                <Link href='/user/update/categories' className='text-center bg-pink-700 text-white cursor-pointer p-2 rounded hover:bg-pink-600 min-w-[48%]'>
                                     Modificar Categorias
                                 </Link>
                             </div>
@@ -120,6 +130,13 @@ export default function UserData() {
                             }
                         </div>
                     </div>
+                    {
+                        (!loader && showPopUp) &&
+                        <DeleteUserPopUp 
+                            modifyShowPopUp={modifyShowPopUp}
+                            token={token}
+                        />
+                    }
                 </div>
             }
         </div>
