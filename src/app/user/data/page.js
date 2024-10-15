@@ -54,7 +54,7 @@ export default function UserData() {
             setShowErrorMsj(false);
             setLoader(false);
         } catch (error) {
-            setMensaje("ERROR");
+            setMensaje(error.response.data);
             setShowMsj(false);
             setShowErrorMsj(true);
             console.error('Error al obtener usuario:', error);
@@ -83,7 +83,7 @@ export default function UserData() {
                 <Loader />
             }
             {
-                (!loader) &&
+                (!loader && !showErrorMsj) &&
                 <div>
                     <h1 className="text-2xl font-bold mb-6 text-white">Mis Datos</h1>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
@@ -95,7 +95,7 @@ export default function UserData() {
                             </p>
                             <p className="text-white"><strong>País: </strong>{user.country}</p>
                             <p className="text-white"><strong>Provincia: </strong>{user.province}</p>
-                            <p className="text-white mb-3"><strong>Teléfono: </strong>{user.phone}</p>
+                            <p className="text-white mb-3"><strong>Teléfono: </strong>{user.phone !== 0 ? user.phone : "No tiene"}</p>
                             <div className='flex w-full justify-between mb-4'>
                                 <Link href='/user/update' className='text-center bg-pink-700 text-white cursor-pointer p-2 rounded hover:bg-pink-600 min-w-[48%]'>
                                     Modificar Datos
@@ -137,6 +137,16 @@ export default function UserData() {
                             token={token}
                         />
                     }
+                </div>
+            }
+            {
+                (!loader && showErrorMsj) &&
+                <div className='bg-white p-3 mt-5 rounded font-bold text-center'>
+                    <Message 
+                        mensaje={mensaje}
+                        showMsj={showMsj}
+                        showErrorMsj={showErrorMsj}
+                    />
                 </div>
             }
         </div>

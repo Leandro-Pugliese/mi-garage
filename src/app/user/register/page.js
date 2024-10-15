@@ -61,7 +61,7 @@ export default function Register() {
                 setShowMsj(false);
                 setShowErrorMsj(true);
                 return;
-              }
+            }
             if (email === "" || selectedCountry === "" || selectedProvince === "" || password === "" || password2 === "") {
                 setMensaje("¡Debes completar todos los campos obligatorios!");
                 setShowMsj(false);

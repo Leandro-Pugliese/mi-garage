@@ -5,6 +5,7 @@ import axios from '../utils/axios';
 import { useRouter } from 'next/navigation'
 import Link from 'next/link';
 import Loader from '@/components/loader';
+import Message from '@/components/message';
 import DeleteVehiclePopUp from '@/components/deleteVehiclePopUp';
 
 export default function Vehicles() {
@@ -58,10 +59,10 @@ export default function Vehicles() {
             setVehicles(response.data)
             setLoader(false)
         } catch (error) {
-            setMensaje(error);
+            setMensaje(error.response.data);
             setShowMsj(false);
             setShowErrorMsj(true);
-            console.error('Error al registrar el usuario:', error);
+            console.error('Error al cargar vehiculos:', error);
             setLoader(false)
         }
     }
@@ -83,7 +84,7 @@ export default function Vehicles() {
                 <Loader />
             }
             {
-                (!loader) &&
+                (!loader && !showErrorMsj) &&
                 <>
                     <h1 className="text-2xl font-bold mb-6 text-white">Mis Vehículos</h1>
                     {
@@ -137,6 +138,16 @@ export default function Vehicles() {
                         Agregar Vehículo
                     </Link>
                 </>
+            }
+            {
+                (!loader && showErrorMsj) &&
+                <div className='bg-white p-3 mt-5 rounded font-bold text-center'>
+                    <Message 
+                        mensaje={mensaje}
+                        showMsj={showMsj}
+                        showErrorMsj={showErrorMsj}
+                    />
+                </div>
             }
         </div>
     );

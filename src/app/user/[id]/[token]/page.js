@@ -64,11 +64,13 @@ export default function emailVerificated() {
             }
             {
                 (!loader) &&
-                <Message 
-                    mensaje={mensaje}
-                    showErrorMsj={showErrorMsj}
-                    showMsj={showMsj}
-                />
+                <div className='bg-white p-3 mt-5 rounded font-bold'>
+                    <Message 
+                        mensaje={mensaje}
+                        showErrorMsj={showErrorMsj}
+                        showMsj={showMsj}
+                    />
+                </div>
             }
         </div>
     );

@@ -1,11 +1,11 @@
 "use client";
-
 import { useState } from 'react';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/solid';
 import axios from '@/app/utils/axios'
 import Cookies from 'js-cookie';
 import Message from '@/components/message';
 import Loader from '@/components/loader';
+import RecoveryPasswordPopUp from '@/components/recoveryPassword';
 
 export default function Login() {
 
@@ -59,9 +59,15 @@ export default function Login() {
   //Hook para boton ver password
   const [showPassword, setShowPassword] = useState(false);
 
+  //Hook para popUp de eliminar cuenta.
+  const [showPopUp, setShowPopUp] = useState(false)
+  const modifyShowPopUp = () => {
+    setShowPopUp(false);
+  }
+
   return (
     <div className="flex flex-col items-center min-h-screen bg-gray-800">
-      <form className="p-8 w-96">
+      <form className="p-8 w-96 pb-2">
         <h2 className="text-2xl font-bold mb-4 text-white">Iniciar sesión</h2>
         <div className="mb-4">
           <label htmlFor="email" className="block mb-1 text-white">Email</label>
@@ -105,12 +111,26 @@ export default function Login() {
           <Loader />
         }
       </form>
+      <div className="mt-3 pr-8 mb-4 flex w-96 justify-end ">
+          <button 
+              className='text-white hover:underline text-xs pl-1'
+              onClick={() => setShowPopUp(true)}
+          >
+            ¿Olvidaste tu contraseña?
+          </button>
+      </div>
       {
         ((showErrorMsj && !loader) || (showMsj && !loader)) && 
         <Message 
           mensaje={mensaje}
           showErrorMsj={showErrorMsj}
           showMsj={showMsj}
+        />
+      }
+      {
+        (!loader && showPopUp) &&
+        <RecoveryPasswordPopUp
+          modifyShowPopUp={modifyShowPopUp}
         />
       }
     </div>

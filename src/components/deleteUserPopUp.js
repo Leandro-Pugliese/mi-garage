@@ -39,7 +39,7 @@ export default function DeleteUserPopUp({ modifyShowPopUp, token})  {
             setShowErrorMsj(false);
             setLoader(false);
         } catch (error) {
-            setMensaje("Error, intentalo nuevamente.");
+            setMensaje(error.response.data);
             setShowMsj(false);
             setShowErrorMsj(true);
             console.error('Error:', error);
