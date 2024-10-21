@@ -64,6 +64,11 @@ export default function Login() {
   const modifyShowPopUp = () => {
     setShowPopUp(false);
   }
+  //Para tener el boton del popUp en el form tengo que prevenir que se actualice la pagina
+  const modifyShowPopUpForm = (e) => {
+    e.preventDefault();
+    setShowPopUp(true);
+  }
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-gray-800">
@@ -102,23 +107,28 @@ export default function Login() {
             </button>
           </div>
         </div>
+        <div className="mb-4">
+            <button 
+                className='text-white hover:underline text-xs pl-1'
+                onClick={modifyShowPopUpForm}
+            >
+              ¿Olvidaste tu contraseña?
+            </button>
+        </div>
         {
           (!loader) &&
-          <button onClick={handleSubmit} className="bg-violet-800 text-white py-2 px-4 w-full rounded hover:cursor-pointer hover:bg-violet-700">Ingresar</button>
+          <button 
+            onClick={handleSubmit} 
+            className="bg-violet-800 text-white py-2 px-4 w-full rounded hover:cursor-pointer hover:bg-violet-700"
+          >
+            Ingresar
+          </button>
         }
         {
           (loader) &&
           <Loader />
         }
       </form>
-      <div className="mt-3 pr-8 mb-4 flex w-96 justify-end ">
-          <button 
-              className='text-white hover:underline text-xs pl-1'
-              onClick={() => setShowPopUp(true)}
-          >
-            ¿Olvidaste tu contraseña?
-          </button>
-      </div>
       {
         ((showErrorMsj && !loader) || (showMsj && !loader)) && 
         <Message 
