@@ -54,7 +54,7 @@ export default function UserData() {
             setShowErrorMsj(false);
             setLoader(false);
         } catch (error) {
-            setMensaje(error.response.data);
+            setMensaje('error');
             setShowMsj(false);
             setShowErrorMsj(true);
             console.error('Error al obtener usuario:', error);
@@ -73,32 +73,6 @@ export default function UserData() {
         setShowPopUp(false);
         if (indicador === "Reload") {
             window.location.reload()
-        }
-    }
-
-    //Funcion para crear preferencia de pago para premium
-    const buyPremium = async () => {
-        try {
-            const email = user.email
-            const config = {
-                method: "post",
-                url: `/buy/premium`,
-                data: {email},
-                headers: {
-                  "Content-Type": "application/json",
-                  "Authorization": token
-                },
-            };
-            const response = await axios(config);
-            setShowMsj(false);
-            setShowErrorMsj(false);
-            console.log(response.data.init_point)
-            window.open(response.data.init_point, '_blank');
-        } catch (error) {
-            setMensaje(error.response.data);
-            setShowMsj(false);
-            setShowErrorMsj(true);
-            console.error('Error al crear preferencia de pago:', error);
         }
     }
 
@@ -141,23 +115,23 @@ export default function UserData() {
                             {
                                 (!user.premium) &&
                                 <div className='flex w-full'>
-                                    <button 
+                                    <Link 
                                         className='flex items-center justify-center mt-4 bg-pink-700 text-white cursor-pointer p-2 w-full rounded hover:bg-pink-600'
-                                        onClick={buyPremium}
+                                        href='/premium'
                                     >
                                         Activar Premium
-                                    </button>
+                                    </Link>
                                 </div>
                             }
                             {
                                 (user.premium) &&
                                 <div className='flex w-full'>
-                                    <button 
+                                    <Link 
                                         className='flex items-center justify-center mt-4 bg-pink-700 text-white cursor-pointer p-2 w-full rounded hover:bg-pink-600'
-                                        onClick={buyPremium}
+                                        href='/premium'
                                     >
                                         Renovar Premium
-                                    </button>
+                                    </Link>
                                 </div>
                             }
                         </div>
