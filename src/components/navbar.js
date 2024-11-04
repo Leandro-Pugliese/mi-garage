@@ -34,7 +34,7 @@ export default function Navbar() {
             <span className="mx-3 text-white">|</span>
             <Link href="#" className="text-white hover:underline">
               <i className="bi bi-bell-fill mx-1"/>
-              Notficaciones
+              Notificaciones
             </Link>
             <span className="mx-3 text-white">|</span>
             <LogOut />

@@ -91,7 +91,7 @@ export default function UserData() {
                             <p className="text-white"><strong>Email: </strong>{user.email}</p>
                             <p className="text-white">
                                 <strong>Premium: </strong>
-                                {user.premium ? `Sí (Hasta el ${new Date(user.premiumExpiration).toLocaleDateString()})` : "No"}
+                                {user.premium ? `Plan ${user.premiumType} (hasta el ${new Date(user.premiumExpiration).toLocaleDateString()})` : "No"}
                             </p>
                             <p className="text-white"><strong>País: </strong>{user.country}</p>
                             <p className="text-white"><strong>Provincia: </strong>{user.province}</p>

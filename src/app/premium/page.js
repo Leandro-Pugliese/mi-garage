@@ -4,7 +4,8 @@ import Cookies from 'js-cookie';
 import axios from '@/app/utils/axios';
 import { useRouter } from 'next/navigation'
 import Loader from '@/components/loader';
-import Message from '@/components/message';
+import MessagePopup from '@/components/messagePopUp';
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 export default function BuyPremium() {
 
@@ -29,9 +30,13 @@ export default function BuyPremium() {
     const [loader, setLoader] = useState(true);
 
     //Hooks para msj
-    const [mensaje, setMensaje] = useState("");
-    const [showMsj, setShowMsj] = useState(false);
-    const [showErrorMsj, setShowErrorMsj] = useState(false);
+    const [message, setMessage] = useState('');
+    const [severity, setSeverity] = useState('success')
+    
+    //Hook para cerrar popUp
+    const closePopUp = () => {
+        setMessage('');
+    }
 
     //Hook para usuario y planes
     const [user, setUser] = useState(null);
@@ -49,13 +54,10 @@ export default function BuyPremium() {
             };
             const response = await axios(config);
             setUser(response.data)
-            setShowMsj(false);
-            setShowErrorMsj(false);
             setLoader(false);
         } catch (error) {
-            setMensaje(error.response.data);
-            setShowMsj(false);
-            setShowErrorMsj(true);
+            setMessage(error.response.data);
+            setSeverity('error');
             console.error('Error al obtener usuario:', error);
             setLoader(false)
         }
@@ -73,13 +75,10 @@ export default function BuyPremium() {
             };
             const response = await axios(config);
             setPlans(response.data);
-            setShowMsj(false);
-            setShowErrorMsj(false);
             setLoader(false);
         } catch (error) {
-            setMensaje(error.response.data);
-            setShowMsj(false);
-            setShowErrorMsj(true);
+            setMessage(error.response.data);
+            setSeverity('error');
             console.error('Error al obtener planes premium:', error);
             setLoader(false);
         }
@@ -93,7 +92,16 @@ export default function BuyPremium() {
     }, [token]);
 
     //Funcion para crear preferencia de pago para premium
-    const buyPremium = async (planName) => {
+    const buyPremium = async (planName, planType) => {
+        if (planType === "Basic" && user.premiumType === "Plus") {
+            setSeverity('success');
+            setMessage(
+                `Actualmente estás disfrutando de todas las ventajas de nuestro plan PLUS. 
+                Una vez que este termine, podrás optar por un plan más básico.
+                ¡Gracias por ser parte de Mi Garage!`
+            );
+            return
+        }
         try {
             const email = user.email
             const config = {
@@ -106,14 +114,11 @@ export default function BuyPremium() {
                 },
             };
             const response = await axios(config);
-            setShowMsj(false);
-            setShowErrorMsj(false);
             console.log(response.data.init_point)
             window.open(response.data.init_point, '_blank');
         } catch (error) {
-            setMensaje('error');
-            setShowMsj(false);
-            setShowErrorMsj(true);
+            setMessage('error');
+            setSeverity('error');
             console.error('Error al crear preferencia de pago:', error);
         }
     }
@@ -130,7 +135,7 @@ export default function BuyPremium() {
                 <Loader />
             }
             {
-                (!loader && !showErrorMsj) &&
+                (!loader) &&
                 <div>
                     <div className='flex w-full justify-between'>
                         <h1 className="text-2xl font-bold mb-6 text-white">Planes Premium</h1>
@@ -149,14 +154,26 @@ export default function BuyPremium() {
                                         <h2 className="text-white text-xl font-bold mb-2">{plan.name}</h2>
                                         <button 
                                             className='flex items-center justify-center w-1/3 bg-pink-700 text-white cursor-pointer px-4 py-2 rounded hover:bg-pink-600'
-                                            onClick={() => buyPremium(plan.name)}
+                                            onClick={() => buyPremium(plan.name, plan.type)}
                                         >
                                             Obtener
                                         </button>
                                     </div>
                                     <p className="text-white"><strong>Producto:</strong> {plan.description}</p>
                                     <p className="text-white"><strong>Precio:</strong> {formateoMoneda(plan.amount)} (ARS)</p>
-                                    <p className="text-white"><strong>Incluye:</strong> -</p>
+                                    <p className="text-white"><strong>Incluye: </strong> 
+                                        {
+                                            plan.includes.length > 0 ? (
+                                                plan.includes.map((item, index) => (
+                                                    <div key={index}>
+                                                        <i className="bi bi-check-circle-fill mx-1"/> {item}
+                                                    </div>
+                                                ))
+                                            ) : (
+                                                <p> - </p>
+                                            )
+                                        }
+                                    </p>
                                 </div>
                             ))}
                             </div>
@@ -166,16 +183,7 @@ export default function BuyPremium() {
                     }
                 </div>
             }
-            {
-                (!loader && showErrorMsj) &&
-                <div className='bg-white p-3 mt-5 rounded font-bold text-center'>
-                    <Message 
-                        mensaje={mensaje}
-                        showMsj={showMsj}
-                        showErrorMsj={showErrorMsj}
-                    />
-                </div>
-            }
+            <MessagePopup message={message} severity={severity} onClose={closePopUp} />
         </div>
     );
 }
