@@ -130,7 +130,7 @@ export default function UserData() {
                                         className='flex items-center justify-center mt-4 bg-pink-700 text-white cursor-pointer p-2 w-full rounded hover:bg-pink-600'
                                         href='/premium'
                                     >
-                                        Renovar Premium
+                                        Renovar / Mejorar Premium
                                     </Link>
                                 </div>
                             }
