@@ -7,6 +7,7 @@ import Link from 'next/link';
 import Loader from '@/components/loader';
 import Message from '@/components/message';
 import DeleteVehiclePopUp from '@/components/deleteVehiclePopUp';
+import SendTransferVehiclePopUp from '@/components/sendTransferVehiclePopUp'
 
 export default function Vehicles() {
     
@@ -27,7 +28,7 @@ export default function Vehicles() {
     //Hook para loader
     const [loader, setLoader] = useState(true);
 
-    //Hook para popUp
+    //Hook para popUps
     const [showPopUp, setShowPopUp] = useState(false)
     const modifyShowPopUp = (indicador) => {
         setShowPopUp(false);
@@ -35,7 +36,7 @@ export default function Vehicles() {
             window.location.reload()
         }
     }
-
+    
     //Hooks para msj
     const [mensaje, setMensaje] = useState("");
     const [showMsj, setShowMsj] = useState(false);
@@ -102,21 +103,35 @@ export default function Vehicles() {
                                     <p className="text-white"><strong>Kilometraje:</strong> {vehicle.km} km</p>
                                     <p className="text-white mb-3"><strong>Última actualización:</strong> {new Date(vehicle.updatedKm).toLocaleDateString()}</p>
                                     <div className='flex w-full justify-between'>
-                                        <Link href={`/vehicles/update/${vehicle._id}`} className=' bg-pink-700 text-white cursor-pointer p-2 rounded hover:bg-pink-600'>
+                                        <Link href={`/vehicles/update/${vehicle._id}`} className='bg-pink-700 text-white text-center cursor-pointer p-2 rounded hover:bg-pink-600 min-w-[45%]'>
                                             Modificar Datos
                                         </Link>
-                                        <button onClick={() => setShowPopUp(true)} className=' bg-pink-700 text-white cursor-pointer p-2 rounded hover:bg-pink-600'>
+                                        <button onClick={() => setShowPopUp('Delete')} className='bg-pink-700 text-white text-center cursor-pointer p-2 rounded hover:bg-pink-600 min-w-[45%]'>
                                             Eliminar Vehículo
                                         </button>
                                     </div>
-                                    <div className='flex w-full'>
-                                        <Link href={`/activities/${vehicle._id}`} className='flex items-center justify-center mt-5 bg-pink-700 text-white cursor-pointer p-2 w-full rounded hover:bg-pink-600'>
+                                    <div className='flex w-full justify-between mt-5'>
+                                        <Link href={`/activities/${vehicle._id}`} className='bg-pink-700 text-white text-center cursor-pointer p-2 rounded hover:bg-pink-600 min-w-[45%]'>
                                             Actividades
                                         </Link>
+                                        <button onClick={() => setShowPopUp('Transfer')} className='bg-pink-700 text-white text-center cursor-pointer p-2 rounded hover:bg-pink-600 min-w-[45%]'>
+                                            Transferir Vehículo
+                                        </button>
                                     </div>
                                     {
-                                        (!loader && showPopUp) &&
+                                        (!loader && showPopUp === 'Delete') &&
                                         <DeleteVehiclePopUp 
+                                            vehicleId={vehicle._id}
+                                            brand={vehicle.brand}
+                                            model={vehicle.model}
+                                            patente={vehicle.patente}
+                                            modifyShowPopUp={modifyShowPopUp}
+                                            token={token}
+                                        />
+                                    }
+                                    {
+                                        (!loader && showPopUp === 'Transfer') &&
+                                        <SendTransferVehiclePopUp 
                                             vehicleId={vehicle._id}
                                             brand={vehicle.brand}
                                             model={vehicle.model}

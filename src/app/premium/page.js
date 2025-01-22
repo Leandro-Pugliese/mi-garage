@@ -153,7 +153,6 @@ export default function BuyPremium() {
                             (user.premium) &&
                             <h2 className='text-2xl font-bold mb-6 text-white ml-4'>(Tu plan actual es: {user.premiumType} hasta {new Date(user.premiumExpiration).toLocaleDateString()})</h2>
                         }
-                        
                     </div>
                     {
                         plans.length > 0 ? (
