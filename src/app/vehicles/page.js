@@ -30,6 +30,17 @@ export default function Vehicles() {
 
     //Hook para popUps
     const [showPopUp, setShowPopUp] = useState(false)
+    const [vehicleId, setVehicleId] = useState(false)
+    const [vehicleBrand, setVehicleBrand] = useState(false)
+    const [vehicleModel, setVehicleModel] = useState(false)
+    const [vehiclePatente, setVehiclePatente] = useState(false)
+    const changedVehicle = (operation, idVehicle, brandVehicle, modelVehicle, patenteVehicle) => {
+        setShowPopUp(operation);
+        setVehicleId(idVehicle)
+        setVehicleBrand(brandVehicle)
+        setVehicleModel(modelVehicle)
+        setVehiclePatente(patenteVehicle)
+    }
     const modifyShowPopUp = (indicador) => {
         setShowPopUp(false);
         if (indicador === "Reload") {
@@ -106,7 +117,10 @@ export default function Vehicles() {
                                         <Link href={`/vehicles/update/${vehicle._id}`} className='bg-pink-700 text-white text-center cursor-pointer p-2 rounded hover:bg-pink-600 min-w-[45%]'>
                                             Modificar Datos
                                         </Link>
-                                        <button onClick={() => setShowPopUp('Delete')} className='bg-pink-700 text-white text-center cursor-pointer p-2 rounded hover:bg-pink-600 min-w-[45%]'>
+                                        <button 
+                                            onClick={() => changedVehicle('Delete', vehicle._id, vehicle._brand, vehicle.model, vehicle.patente)} 
+                                            className='bg-pink-700 text-white text-center cursor-pointer p-2 rounded hover:bg-pink-600 min-w-[45%]'
+                                        >
                                             Eliminar Vehículo
                                         </button>
                                     </div>
@@ -114,17 +128,20 @@ export default function Vehicles() {
                                         <Link href={`/activities/${vehicle._id}`} className='bg-pink-700 text-white text-center cursor-pointer p-2 rounded hover:bg-pink-600 min-w-[45%]'>
                                             Actividades
                                         </Link>
-                                        <button onClick={() => setShowPopUp('Transfer')} className='bg-pink-700 text-white text-center cursor-pointer p-2 rounded hover:bg-pink-600 min-w-[45%]'>
+                                        <button 
+                                            onClick={() => changedVehicle('Transfer', vehicle._id, vehicle._brand, vehicle.model, vehicle.patente)} 
+                                            className='bg-pink-700 text-white text-center cursor-pointer p-2 rounded hover:bg-pink-600 min-w-[45%]'
+                                        >
                                             Transferir Vehículo
                                         </button>
                                     </div>
                                     {
                                         (!loader && showPopUp === 'Delete') &&
                                         <DeleteVehiclePopUp 
-                                            vehicleId={vehicle._id}
-                                            brand={vehicle.brand}
-                                            model={vehicle.model}
-                                            patente={vehicle.patente}
+                                            vehicleId={vehicleId}
+                                            brand={vehicleBrand}
+                                            model={vehicleModel}
+                                            patente={vehiclePatente}
                                             modifyShowPopUp={modifyShowPopUp}
                                             token={token}
                                         />
@@ -132,10 +149,10 @@ export default function Vehicles() {
                                     {
                                         (!loader && showPopUp === 'Transfer') &&
                                         <SendTransferVehiclePopUp 
-                                            vehicleId={vehicle._id}
-                                            brand={vehicle.brand}
-                                            model={vehicle.model}
-                                            patente={vehicle.patente}
+                                            vehicleId={vehicleId}
+                                            brand={vehicleBrand}
+                                            model={vehicleModel}
+                                            patente={vehiclePatente}
                                             modifyShowPopUp={modifyShowPopUp}
                                             token={token}
                                         />

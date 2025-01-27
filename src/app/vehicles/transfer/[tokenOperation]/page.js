@@ -114,8 +114,8 @@ export default function TransferVehicle() {
             {
                 (!loader && !mensaje) &&
                 <div className='flex justify-between'>
-                    <button onClick={() => responseOperation(true)} className="bg-violet-800 w-5/12 text-white py-2 px-4 w-full rounded cursor-pointer hover:bg-violet-700"> Aceptar </button>
-                    <button onClick={() => responseOperation(false)} className="bg-red-600 w-5/12 text-white py-2 px-4 w-full rounded cursor-pointer hover:bg-red-700"> Rechazar </button>
+                    <button onClick={() => responseOperation(true)} className="bg-violet-800 w-5/12 text-white py-2 px-4 rounded cursor-pointer hover:bg-violet-700"> Aceptar </button>
+                    <button onClick={() => responseOperation(false)} className="bg-red-600 w-5/12 text-white py-2 px-4 rounded cursor-pointer hover:bg-red-700"> Rechazar </button>
                 </div>
             }
             {
