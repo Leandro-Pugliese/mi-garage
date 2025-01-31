@@ -3,6 +3,7 @@ import "./globals.css";
 import Navbar from '../components/navbar';
 import Footer from "@/components/footer";
 import CookieBanner from "@/components/cookiesBanner";
+import { NotificationsProvider } from "@/context/NotificationsContext";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -27,10 +28,12 @@ export default function RootLayout({ children }) {
   return (
     <html lang="es">
       <body className="bg-gray-800">
-        <Navbar />
-        <main>{children}</main>
-        <CookieBanner />
-        <Footer />
+        <NotificationsProvider>
+          <Navbar />
+          <main>{children}</main>
+          <CookieBanner />
+          <Footer />
+        </NotificationsProvider>
       </body>
     </html>
   );

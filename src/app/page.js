@@ -5,6 +5,7 @@ import axios from './utils/axios';
 import VerifyEmailPopup from "@/components/verifyEmail";
 import MessagePopup from '@/components/messagePopUp';
 import Loader from '@/components/loader';
+import { useNotifications } from "@/context/NotificationsContext";
 
 
 export default function Home() {
@@ -14,6 +15,7 @@ export default function Home() {
 
   //Verificación de sesión.
   const [token, setToken] = useState(null)
+
   const isSession = () => {
     // Recupero el token de la cookie
     const hayToken = Cookies.get('token');
@@ -30,11 +32,19 @@ export default function Home() {
     isSession();
   }, []);
 
-  //Hooks para Mensaje popup
+  // Contexto para las notificaciones
+  const {notifications, areNotificationsLoaded } = useNotifications();
+
+  useEffect(() => {
+    if (token) {
+      console.log(areNotificationsLoaded)
+    };
+  }, [token]);
+  // Hooks para Mensaje popup
   const [message, setMessage] = useState('');
   const [severity, setSeverity] = useState('success');
 
-  //Verificacción de email
+  // Verificacción de email
   const [isEmailVerified, setIsEmailVerified] = useState(true);
   const verifyEmail = async () => {
     try {
@@ -55,9 +65,11 @@ export default function Home() {
 
   useEffect(() => {
     if (token) {
-      verifyEmail()
+      verifyEmail();
     }
   }, [token]);
+
+
 
   const handleSendVerificationEmail = async () => {
     try {
@@ -102,6 +114,17 @@ export default function Home() {
             <VerifyEmailPopup onSendEmail={handleSendVerificationEmail} />
           }
           <MessagePopup message={message} severity={severity} onClose={handleClosePopup} />
+          {notifications && notifications.length > 0 ? (
+            notifications.map((notification) => (
+              <div key={notification._id} className="mb-4 bg-violet-800 shadow-md rounded-lg p-5">
+                <p className="text-white"><strong>{notification.title}</strong> </p>
+                <p className="text-white">{notification.message}</p>
+              </div>
+            ))
+          ) : (
+            <p className="text-white">No hay notificaciones</p>
+          )}
+          
           <p className='text-white'>Estoy verificado</p>
         </div>
       }

@@ -10,7 +10,7 @@ export default function LogOut() {
     const handleLogout = () => {
         // Elimino la cookie
         Cookies.remove('token');
-        //Chequeo si estoy en ya en inicio o no
+        //Chequeo si estoy en inicio o no
         if (window.location.pathname === "/") {
             //Si estoy en inicio, tengo que recargar toda la pagina para que renderice de nuevo todo
             window.location.reload();
