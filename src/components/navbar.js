@@ -3,6 +3,7 @@ import { cookies } from 'next/headers';
 import LogOut from './logOut';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import Image from 'next/image';
+import NotificationsButton from "./notificationsButton";
 
 
 export default function Navbar() {
@@ -21,7 +22,7 @@ export default function Navbar() {
         />
         {
           (token) &&
-          <div>
+          <div className='flex'>
             <Link href="/vehicles" className="text-white hover:underline">
               <i className="bi bi-car-front-fill mx-1"/>
               Mis Vehículos
@@ -32,10 +33,7 @@ export default function Navbar() {
               Mi Cuenta
             </Link>
             <span className="mx-3 text-white">|</span>
-            <Link href="#" className="text-white hover:underline">
-              <i className="bi bi-bell-fill mx-1"/>
-              Notificaciones
-            </Link>
+            <NotificationsButton />
             <span className="mx-3 text-white">|</span>
             <LogOut />
           </div>
