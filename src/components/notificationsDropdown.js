@@ -1,7 +1,6 @@
 'use client'
 import { useState, useEffect } from "react";
 import { useNotifications } from "@/context/NotificationsContext";
-import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 
 const NotificationsDropdown = ({}) => {
@@ -14,7 +13,6 @@ const NotificationsDropdown = ({}) => {
         setPendingReadNotifications((prev) => {
             // Si la notificación ya está en la lista, no hago nada
             if (notification.read || prev.includes(notification._id)) return prev;
-            
             return [...prev, notification._id];
         });
     };
@@ -47,7 +45,7 @@ const NotificationsDropdown = ({}) => {
                 {notifications.slice(0, 4).map((notif) => (
                     <div
                         key={notif._id}
-                        className={`p-2 cursor-pointer ${
+                        className={`p-2 mb-1 cursor-pointer hover:bg-gray-200 hover:rounded-lg ${
                             notif.read ? "text-gray-500" : "text-black font-bold"
                         }`}
                         onClick={() => openNotification(notif)}

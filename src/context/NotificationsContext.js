@@ -38,31 +38,31 @@ export function NotificationsProvider({ children }) {
     }, []);
 
     const [notifications, setNotifications] = useState([]);
+    const [notReadNotifications, setNotReadNotifications] = useState([]);
     const [areNotificationsLoaded, setAreNotificationsLoaded] = useState(false); //Si uso este state no hace flata usar las cookies.
 
     const getNotifications = async () => {
         try {
-            if (areNotificationsLoaded === false) {
-                const config = {
-                    method: "get",
-                    url: "/notifications",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": token
-                    }
-                };
-                const response = await axios(config);
-                //Cookies.set('notificationsLoaded', 'true', {expires: 1, path: '/'}) // Cookie con expiración de 1 día.
-                setNotifications(response.data);
-                setAreNotificationsLoaded(true);
-            }
+            const config = {
+                method: "get",
+                url: "/notifications",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": token
+                }
+            };
+            const response = await axios(config);
+            setNotifications(response.data);
+            const unreadNotifications = response.data.filter(notif => notif.read === false).length;
+            setNotReadNotifications(unreadNotifications);
+            setAreNotificationsLoaded(true);
         } catch (error) {
             console.log(error)
         }
     }
 
     useEffect(() => {
-        if (token) {
+        if (token && areNotificationsLoaded === false) {
             getNotifications();
         }
       }, [token]);
@@ -71,18 +71,15 @@ export function NotificationsProvider({ children }) {
     useEffect(() => {
         // Me aseguro de tener el userId para unirse a la sala.
         if (!userId) return;
-
         // Conecto al servidor de Socket.IO.
         // Asegúrarse de que NEXT_PUBLIC_BACKEND_URL apunte al backend.
         const socket = io(process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000");
-
         // Uno el usuario a la sala correspondiente al userId.
         socket.emit("join", userId);
-
         // Escucho el evento "newNotification" y se actualiza el estado.
         socket.on("newNotification", (data) => {
             console.log("Nueva notificación recibida:", data);
-            setNotifications(prev => [...prev, data]);
+            getNotifications();
         });
 
         // Limpieza de la conexión al desmontar el componente.
@@ -116,9 +113,14 @@ export function NotificationsProvider({ children }) {
         }
     };
 
+    // Actaulizo el cartel de notificaciones no leidas, cuando es leida alguna notificacion.
+    useEffect(() => {
+        const unreadNotifications = notifications.filter(notif => notif.read === false).length;
+        setNotReadNotifications(unreadNotifications);
+      }, [notifications]);
 
     return (
-        <NotificationsContext.Provider value={{ notifications, areNotificationsLoaded, markAsRead }}>
+        <NotificationsContext.Provider value={{ notifications, areNotificationsLoaded, markAsRead, notReadNotifications }}>
             {children}
         </NotificationsContext.Provider>
     );
