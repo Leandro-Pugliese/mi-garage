@@ -43,7 +43,7 @@ export default function Login() {
       };
       // llamado axios con la config lista.
       const response = await axios(config);
-      // Guardo el token en una cookie
+      // Guardo el token y el email en una cookie.
       Cookies.set('token', response.data.token, {expires: 1, path: '/'}); //Duración de un día.
       // Redirijo al usuario al panel general.
       window.location.href = "/"

@@ -85,7 +85,7 @@ export default function UserData() {
             {
                 (!loader && !showErrorMsj) &&
                 <div>
-                    <h1 className="text-2xl font-bold mb-6 text-white">Mis Datos</h1>
+                    <h1 className="text-2xl font-bold mb-6 text-white">Mi Cuenta</h1>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
                         <div className="bg-violet-800 shadow-md rounded-lg p-5">
                             <p className="text-white"><strong>Email: </strong>{user.email}</p>
@@ -112,28 +112,20 @@ export default function UserData() {
                                     Modificar Categorias
                                 </Link>
                             </div>
-                            {
-                                (!user.premium) &&
-                                <div className='flex w-full'>
-                                    <Link 
-                                        className='flex items-center justify-center mt-4 bg-pink-700 text-white cursor-pointer p-2 w-full rounded hover:bg-pink-600'
-                                        href='/premium'
-                                    >
+                            <div className='flex w-full justify-between mt-4'>
+                                {(user.premium) ? (
+                                    <Link href='/premium' className='text-center bg-pink-700 text-white cursor-pointer p-2 rounded hover:bg-pink-600 max-w-[48%]'>
+                                        Renovar / Mejorar Premium
+                                    </Link> 
+                                ) : (
+                                    <Link href='/premium' className='text-center bg-pink-700 text-white cursor-pointer p-2 rounded hover:bg-pink-600 max-w-[48%]'>
                                         Activar Premium
                                     </Link>
-                                </div>
-                            }
-                            {
-                                (user.premium) &&
-                                <div className='flex w-full'>
-                                    <Link 
-                                        className='flex items-center justify-center mt-4 bg-pink-700 text-white cursor-pointer p-2 w-full rounded hover:bg-pink-600'
-                                        href='/premium'
-                                    >
-                                        Renovar / Mejorar Premium
-                                    </Link>
-                                </div>
-                            }
+                                )}
+                                <Link href='/user/transfers' className='text-center bg-pink-700 text-white cursor-pointer p-2 rounded hover:bg-pink-600 min-w-[48%]'>
+                                    Mis <br/> Transferencias
+                                </Link>
+                            </div>
                         </div>
                     </div>
                     {
