@@ -49,7 +49,7 @@ export default function UserData() {
                 },
             };
             const response = await axios(config);
-            setUser(response.data)
+            setUser(response.data);
             setShowMsj(false);
             setShowErrorMsj(false);
             setLoader(false);

@@ -39,25 +39,22 @@ const NotificationsDropdown = ({}) => {
         };
     }, [selectedNotification]);
 
+    
+
     return (
         <div className="relative">
-            <div className="absolute right-0 mt-2 bg-white shadow-lg rounded-lg w-72">
-                {notifications.slice(0, 4).map((notif) => (
+            <div className="absolute right-0 mt-2 bg-white shadow-lg rounded-lg w-72 max-h-[300px] overflow-y-auto">
+                {notifications.map((notif) => (
                     <div
                         key={notif._id}
-                        className={`p-2 mb-1 cursor-pointer hover:bg-gray-200 hover:rounded-lg ${
-                            notif.read ? "text-gray-500" : "text-black font-bold"
-                        }`}
+                        className={`p-2 mb-1 cursor-pointer hover:bg-gray-200 hover:rounded-lg ${notif.read ? "text-gray-500" : "text-black font-bold"}`}
                         onClick={() => openNotification(notif)}
                     >
                         {notif.title}
                     </div>
                 ))}
-                <Link href="#" className="block text-blue-500 p-2 text-center">
-                    Ver todas
-                </Link>
             </div>
-
+            
             {/* PopUp de la notificación */}
             {selectedNotification && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
