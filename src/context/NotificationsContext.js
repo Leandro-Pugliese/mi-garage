@@ -120,7 +120,7 @@ export function NotificationsProvider({ children }) {
       }, [notifications]);
 
     return (
-        <NotificationsContext.Provider value={{ notifications, areNotificationsLoaded, markAsRead, notReadNotifications }}>
+        <NotificationsContext.Provider value={{ notifications, areNotificationsLoaded, markAsRead, notReadNotifications, token }}>
             {children}
         </NotificationsContext.Provider>
     );

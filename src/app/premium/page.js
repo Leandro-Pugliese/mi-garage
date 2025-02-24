@@ -231,7 +231,7 @@ export default function BuyPremium() {
                             ))}
                             </div>
                         ) : (
-                            <div>No hay planes disponiles en este momento.</div>
+                            <div className='text-white'>No hay planes disponiles en este momento.</div>
                         )
                     }
                 </div>
