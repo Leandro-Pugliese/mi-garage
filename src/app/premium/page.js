@@ -56,7 +56,7 @@ export default function BuyPremium() {
             };
             const response = await axios(config);
             setUser(response.data)
-            if (response.data.premium === true && response.data.premiumType === 'Basic') {
+            if (response.data.premium === true ) {
                 const expiryDate = new Date(response.data.premiumExpiration);
                 const currentDate = new Date(Date.now());
                 setPremiumDaysLeft(differenceInDays(expiryDate, currentDate));
@@ -100,17 +100,17 @@ export default function BuyPremium() {
 
     //Funcion para crear preferencia de pago para premium
     const buyPremium = async (planName, planType) => {
-        if (planType === "Basic" && user.premiumType === "Plus") {
+        if ((planType === "Basic" && user.premiumType === "Plus") || (planType === "Basic" && user.premiumType === "Full") || (planType === "Plus" && user.premiumType === "Full")) {
             setSeverity('success');
             setMessage(
-                `Actualmente estás disfrutando de todas las ventajas de nuestro plan PLUS. 
-                Una vez que este termine, podrás optar por un plan más básico.
+                `Actualmente estás disfrutando de todas las ventajas de nuestro plan ${user.premiumType}. 
+                Una vez que este termine, podrás optar por un plan más económico.
                 ¡Gracias por ser parte de Mi Garage!`
             );
             return
         }
         let upgrade = false;
-        if (user.premiumType === 'Basic' && planType === "Plus") {
+        if ((user.premiumType === 'Basic' && planType === "Plus") || (user.premiumType === 'Basic' && planType === "Full") || (user.premiumType === 'Plus' && planType === "Full")) {
             upgrade = true;
         }
         try {
@@ -163,54 +163,80 @@ export default function BuyPremium() {
                                         <h2 className="text-white text-xl font-bold mb-2">
                                             {plan.name} 
                                         </h2>
-                                        <button 
-                                            className='flex items-center justify-center w-1/3 bg-pink-700 text-white cursor-pointer px-4 py-2 rounded hover:bg-pink-600'
-                                            onClick={() => buyPremium(plan.name, plan.type)}
-                                        >
-                                            Obtener
-                                        </button>
+                                        {
+                                            ((user.premiumType === 'Default') || (user.premiumType === 'Plus' && plan.type === "Basic") || (user.premiumType === 'Full' && plan.type === "Basic") || (user.premiumType === 'Full' && plan.type === "Plus")) &&
+                                            <button 
+                                                className='flex items-center justify-center w-1/3 bg-pink-700 text-white cursor-pointer px-4 py-2 rounded hover:bg-pink-600'
+                                                onClick={() => buyPremium(plan.name, plan.type)}
+                                            >
+                                                Obtener Plan
+                                            </button>
+                                        }
+                                        {
+                                            ((user.premiumType === 'Basic' && plan.type === "Basic") || (user.premiumType === 'Plus' && plan.type === "Plus") || (user.premiumType === 'Full' && plan.type === "Full")) &&
+                                            <button 
+                                                className='flex items-center justify-center w-1/3 bg-pink-700 text-white cursor-pointer px-4 py-2 rounded hover:bg-pink-600'
+                                                onClick={() => buyPremium(plan.name, plan.type)}
+                                            >
+                                                Renovar Plan
+                                            </button>
+                                        }
+                                        {
+                                            ((user.premiumType === 'Basic' && plan.type === "Plus") || (user.premiumType === 'Basic' && plan.type === "Full") || (user.premiumType === 'Plus' && plan.type === "Full")) &&
+                                            <button 
+                                                className='flex items-center justify-center w-1/3 bg-pink-700 text-white cursor-pointer px-4 py-2 rounded hover:bg-pink-600'
+                                                onClick={() => buyPremium(plan.name, plan.type)}
+                                            >
+                                                Mejorar Plan
+                                            </button>
+                                        }
                                     </div>
                                     <p className="text-white">
                                         <strong className='mr-1'>
-                                            <i class="bi bi-chevron-double-right mx-1"></i>
+                                            <i className="bi bi-chevron-double-right mx-1"></i>
                                             Producto:
                                         </strong> 
                                         {plan.description}
-                                        {(plan.type === 'Plus' && user.premiumType === 'Basic') ? 
-                                            (
-                                                '  + mejora de tu plan actual' //Se podrian poner los dias que va a mejorar del plan actual
-                                            ) : (
-                                                ''
-                                            )
+                                        {
+                                            ((plan.type === 'Plus' && user.premiumType === 'Basic') || (plan.type === 'Full' && user.premiumType === 'Basic') || (plan.type === 'Full' && user.premiumType === 'Plus')) &&
+                                            ' + mejora de tu plan actual'
                                         }
                                     </p>
-                                    <p className="text-white">
-                                        <strong>
-                                            <i class="bi bi-chevron-double-right mx-1"></i>
+                                    <div className="text-white">
+                                        <strong className='mr-2'>
+                                            <i className="bi bi-chevron-double-right mx-1"></i>
                                             Precio:
                                         </strong> 
-                                        {(plan.type === 'Plus' && user.premiumType === 'Basic') ? 
-                                            (
-                                                `${formateoMoneda(plan.amount)} (ARS) Plan 
-                                                + ${formateoMoneda((plan.amount / 30) + premiumDaysLeft)} (ARS) Mejora plan actual 
-                                                (Total ${formateoMoneda(plan.amount + ((plan.amount / 30) + premiumDaysLeft))} ARS)`   
-                                            ) : (
+                                        {(
+                                            (plan.type === 'Plus' && user.premiumType === 'Basic') 
+                                            || (plan.type === 'Full' && user.premiumType === 'Basic') 
+                                            || (plan.type === 'Full' && user.premiumType === 'Plus')
+                                        ) ? (
+                                            <p className='ml-6'>
+                                                {/* <i className="bi bi-coin mx-1"/> */}
+                                                {`■ ${formateoMoneda(plan.amount)} (ARS) Plan`} <br/>
+                                                {/* <i className="bi bi-plus-circle mx-1"/> */}
+                                                {`+ ${formateoMoneda((plan.amount / 30) * premiumDaysLeft)} (ARS) Mejora plan actual por ${premiumDaysLeft} días restantes`} <br/>
+                                                {/* <i className="bi bi-check-circle-fill mx-1"/> */}
+                                                <hr className='w-1/5'/>
+                                                {`= ${formateoMoneda(plan.amount + ((plan.amount / 30) * premiumDaysLeft))} (ARS) Total`}
+                                            </p> 
+                                        ) : (
                                                 `${formateoMoneda(plan.amount)} (ARS)`
                                             )
                                         }
-                                        
-                                    </p>
-                                    <p className="text-white">
+                                    </div>
+                                    <div className="text-white">
                                         <strong>
-                                            <i class="bi bi-chevron-double-right mx-1"></i>
+                                            <i className="bi bi-chevron-double-right mx-1"></i>
                                             Incluye: 
                                         </strong> 
-                                        {(plan.type === 'Plus' && user.premiumType === 'Basic') ? 
+                                        {((plan.type === 'Plus' && user.premiumType === 'Basic') || (plan.type === 'Full' && user.premiumType === 'Basic') || (plan.type === 'Full' && user.premiumType === 'Plus')) ? 
                                             (
-                                                <div>
+                                                <p className='ml-6'>
                                                     <i className="bi bi-check-circle-fill mx-1"/> 
                                                     {`Mejora de tu plan actual hasta su vencimiento, solo abonas la diferencia de precio de los días restantes de tu plan (${premiumDaysLeft} días).`}
-                                                </div>
+                                                </p>
                                             ) : (
                                                 ''
                                             )
@@ -218,15 +244,15 @@ export default function BuyPremium() {
                                         {
                                             plan.includes.length > 0 ? (
                                                 plan.includes.map((item, index) => (
-                                                    <div key={index}>
+                                                    <p className='ml-6' key={index}>
                                                         <i className="bi bi-check-circle-fill mx-1"/> {item}
-                                                    </div>
+                                                    </p>
                                                 ))
                                             ) : (
                                                 <p> - </p>
                                             )
                                         }
-                                    </p>
+                                    </div>
                                 </div>
                             ))}
                             </div>
